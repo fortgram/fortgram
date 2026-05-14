@@ -1415,4 +1415,10 @@
   <item type="id" name="btn_playback_speed_1_2" />
   <item type="id" name="btn_playback_speed_1_5" />
   <item type="id" name="btn_playback_speed_2_0" />
+
+  <!-- MiniGram: parental controls -->
+  <item type="id" name="btn_parentalControls" />
+  <item type="id" name="btn_parentalPinChange" />
+  <item type="id" name="btn_parentalPinDisable" />
+  <item type="id" name="controller_parentalControls" />
 </resources>
