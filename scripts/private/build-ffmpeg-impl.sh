@@ -173,7 +173,8 @@ LD=$CC
 AS=$CC
 build_one
 
-# x86_64
+# x86_64 — skipped (arm-only build)
+if false; then
 CROSS_PREFIX=$PREBUILT/bin/x86_64-linux-android
 ARCH=x86_64
 CPU=x86_64
@@ -204,6 +205,8 @@ CXX=${CROSS_PREFIX}${ANDROID_API}-clang++
 LD=$CC
 AS=$CC
 build_one
+
+fi # end x86_64 skip
 
 # 32-bit, minSdk 16
 ANDROID_NDK_VERSION=$ANDROID_NDK_VERSION_LEGACY
@@ -263,7 +266,8 @@ CXX=$PREBUILT/bin/armv7a-linux-androideabi${ANDROID_API}-clang++
 AS=$CC
 build_one
 
-# x86
+# x86 — skipped (arm-only build)
+if false; then
 CROSS_PREFIX=$PREBUILT/bin/i686-linux-android
 ARCH=x86
 CPU=i686
@@ -311,5 +315,7 @@ CC=${CROSS_PREFIX}${ANDROID_API}-clang
 CXX=${CROSS_PREFIX}${ANDROID_API}-clang++
 AS=$CC
 build_one
+
+fi # end x86 skip
 
 popd
