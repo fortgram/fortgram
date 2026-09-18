@@ -90,4 +90,17 @@
   <string name="ParentalImportQrHint">Point the camera at a QR code from FortGram parental settings export.</string>
   <string name="ParentalImportPreviewHint">Untick anything you do not want to import. Applying replaces the current parental settings.</string>
   <string name="ParentalImportApply">Apply</string>
+  <string name="BackgroundCalls">Background work and calls</string>
+  <string name="BackgroundCallsHint">For messages and incoming calls to arrive while FortGram is closed, the phone must be allowed to wake the app and show the call screen. Check each item below.</string>
+  <string name="BackgroundBattery">Battery: no restrictions</string>
+  <string name="BackgroundOverlay">Display over other apps</string>
+  <string name="BackgroundMiuiPermissions">MIUI: pop-up windows in background</string>
+  <string name="BackgroundAutostart">Autostart</string>
+  <string name="BackgroundAppInfo">Open app settings</string>
+  <string name="BackgroundStatusOk">Enabled</string>
+  <string name="BackgroundStatusAction">Tap to enable</string>
+  <string name="BackgroundStatusCheck">Tap to check</string>
+  <string name="BackgroundMiuiHint">On Xiaomi / Redmi (MIUI): in "Other permissions" enable "Display pop-up windows while running in the background" and "Show on Lock screen"; enable Autostart; set battery saver to "No restrictions".</string>
+  <string name="BackgroundGenericHint">Some phones (Xiaomi, realme, Huawei, Samsung) additionally require Autostart and disabling battery optimisation in their own settings.</string>
+  <string name="BackgroundOpenFailed">Could not open this settings screen</string>
 </resources>

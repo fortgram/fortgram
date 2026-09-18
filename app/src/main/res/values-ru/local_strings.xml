@@ -74,4 +74,17 @@
   <string name="ParentalImportQrHint">Наведите камеру на QR-код из экспорта настроек родительского контроля FortGram.</string>
   <string name="ParentalImportPreviewHint">Снимите галочки с того, что импортировать не нужно. Применение заменит текущие настройки родительского контроля.</string>
   <string name="ParentalImportApply">Применить</string>
+  <string name="BackgroundCalls">Фоновая работа и звонки</string>
+  <string name="BackgroundCallsHint">Чтобы сообщения и входящие звонки приходили, когда FortGram закрыт, телефон должен разрешать будить приложение и показывать экран звонка. Проверьте каждый пункт ниже.</string>
+  <string name="BackgroundBattery">Батарея: без ограничений</string>
+  <string name="BackgroundOverlay">Поверх других приложений</string>
+  <string name="BackgroundMiuiPermissions">MIUI: всплывающие окна в фоне</string>
+  <string name="BackgroundAutostart">Автозапуск</string>
+  <string name="BackgroundAppInfo">Открыть настройки приложения</string>
+  <string name="BackgroundStatusOk">Включено</string>
+  <string name="BackgroundStatusAction">Нажмите, чтобы включить</string>
+  <string name="BackgroundStatusCheck">Нажмите, чтобы проверить</string>
+  <string name="BackgroundMiuiHint">На Xiaomi / Redmi (MIUI): в «Другие разрешения» включите «Всплывающие окна в фоновом режиме» и «Показывать на экране блокировки»; включите Автозапуск; в экономии батареи выберите «Нет ограничений».</string>
+  <string name="BackgroundGenericHint">Некоторые телефоны (Xiaomi, realme, Huawei, Samsung) дополнительно требуют включить автозапуск и снять ограничения батареи в своих настройках.</string>
+  <string name="BackgroundOpenFailed">Не удалось открыть этот экран настроек</string>
 </resources>

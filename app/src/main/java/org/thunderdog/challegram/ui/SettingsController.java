@@ -641,6 +641,8 @@ public class SettingsController extends ViewController<Void> implements
     items.add(new ListItem(ListItem.TYPE_SEPARATOR));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalControls, R.drawable.baseline_security_24, R.string.ParentalControls));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR));
+    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_backgroundCalls, R.drawable.baseline_phone_in_talk_24, R.string.BackgroundCalls));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_stickerSettingsAndEmoji, R.drawable.deproko_baseline_stickers_filled_24, R.string.StickersAndEmoji));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_themeSettings, R.drawable.baseline_palette_24, R.string.ThemeSettings));
@@ -1233,6 +1235,8 @@ public class SettingsController extends ViewController<Void> implements
       navigateTo(new SettingsDataController(context, tdlib));
     } else if (viewId == R.id.btn_privacySettings) {
       navigateTo(new SettingsPrivacyController(context, tdlib));
+    } else if (viewId == R.id.btn_backgroundCalls) {
+      navigateTo(new org.thunderdog.challegram.fortgram.SettingsBackgroundController(context, tdlib));
     } else if (viewId == R.id.btn_parentalControls) {
       Runnable openParental = () -> navigateTo(new org.thunderdog.challegram.fortgram.SettingsParentalController(context, tdlib));
       if (org.thunderdog.challegram.fortgram.ParentalPin.instance().isSet()) {
