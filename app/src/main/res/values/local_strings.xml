@@ -26,7 +26,7 @@
 
   <!-- FortGram: whitelist mode -->
   <string name="ParentalWhitelistMode">Whitelist mode</string>
-  <string name="ParentalWhitelistModeHint">Child can only chat with phone contacts and explicitly allowed users. New groups, channels and secret chats are blocked.</string>
+  <string name="ParentalWhitelistModeHint">Child can only chat with phone contacts and explicitly allowed users, and in groups allowed below. Other groups, channels and secret chats are hidden.</string>
   <string name="ParentalWhitelistContacts">Allowed contacts</string>
   <string name="ParentalWhitelistEmpty">No additional users allowed. Phone contacts are allowed automatically.</string>
   <string name="ParentalWhitelistContactsAuto">Allowed by phone contact</string>
@@ -41,6 +41,14 @@
   <string name="ParentalRestartNow">Restart now</string>
   <string name="ParentalAllowAddContact">Allow adding contacts</string>
   <string name="ParentalAllowAddContactHint">When off, only the parent can add new contacts via parental settings.</string>
+
+  <string name="ParentalGroups">Allowed groups</string>
+  <string name="ParentalGroupsNone">None</string>
+  <string name="ParentalGroupsCount">%1$d allowed</string>
+  <string name="ParentalGroupsHeader">Groups the child is a member of</string>
+  <string name="ParentalGroupsHint">The child can read and write only in the groups switched on here. Joining by link and creating groups stay blocked: add the child to a group from your own account, then allow it here. Channels are never shown.</string>
+  <string name="ParentalGroupsEmpty">The child is not a member of any group yet.</string>
+  <string name="ParentalGroupUnavailable">Group is no longer available</string>
 
   <string name="ParentalStickers">Stickers</string>
   <string name="ParentalStickersRestrict">Official sticker packs only</string>

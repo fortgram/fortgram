@@ -26,6 +26,7 @@ import tgx.td.ChatId;
 public final class ParentalPolicy {
   private static final String KEY_ENABLED = "fg_par_enabled";
   private static final String KEY_WHITELIST_USERS = "fg_par_whitelist_users";
+  private static final String KEY_WHITELIST_GROUPS = "fg_par_whitelist_groups";
   private static final String KEY_ALLOW_ADD_CONTACT = "fg_par_allow_add_contact";
   private static final String KEY_STICKERS_RESTRICT = "fg_par_stickers_restrict";
   private static final String KEY_STICKERS_WHITELIST = "fg_par_stickers_whitelist";
@@ -51,6 +52,7 @@ public final class ParentalPolicy {
   private boolean enabled;
   private boolean allowAddContact;
   private long[] manualUsers;
+  private long[] allowedGroups;
   private boolean stickersRestrict;
   private long[] stickerWhitelist;
   private final LongSparseArray<Boolean> officialSetCache = new LongSparseArray<>();
@@ -61,6 +63,8 @@ public final class ParentalPolicy {
     this.allowAddContact = Settings.instance().getBoolean(KEY_ALLOW_ADD_CONTACT, true);
     long[] stored = Settings.instance().getLongArray(KEY_WHITELIST_USERS);
     this.manualUsers = stored != null ? stored : new long[0];
+    long[] storedGroups = Settings.instance().getLongArray(KEY_WHITELIST_GROUPS);
+    this.allowedGroups = storedGroups != null ? storedGroups : new long[0];
     this.stickersRestrict = Settings.instance().getBoolean(KEY_STICKERS_RESTRICT, false);
     long[] storedSets = Settings.instance().getLongArray(KEY_STICKERS_WHITELIST);
     this.stickerWhitelist = storedSets != null ? storedSets : new long[0];
@@ -137,6 +141,50 @@ public final class ParentalPolicy {
     manualUsers = next;
     Settings.instance().putLongArray(KEY_WHITELIST_USERS, next);
     notifyChanged();
+  }
+
+  // Allowed groups -----------------------------------------------------------
+
+  public long[] getAllowedGroups () {
+    return allowedGroups.clone();
+  }
+
+  @AnyThread
+  public boolean isGroupWhitelisted (long chatId) {
+    for (long id : allowedGroups) {
+      if (id == chatId) return true;
+    }
+    return false;
+  }
+
+  public void addAllowedGroup (long chatId) {
+    if (chatId == 0 || isGroupWhitelisted(chatId)) return;
+    long[] next = Arrays.copyOf(allowedGroups, allowedGroups.length + 1);
+    next[allowedGroups.length] = chatId;
+    allowedGroups = next;
+    Settings.instance().putLongArray(KEY_WHITELIST_GROUPS, next);
+    notifyChanged();
+  }
+
+  public void removeAllowedGroup (long chatId) {
+    if (!isGroupWhitelisted(chatId)) return;
+    long[] next = new long[allowedGroups.length - 1];
+    int i = 0;
+    for (long id : allowedGroups) {
+      if (id != chatId) next[i++] = id;
+    }
+    allowedGroups = next;
+    Settings.instance().putLongArray(KEY_WHITELIST_GROUPS, next);
+    notifyChanged();
+  }
+
+  /**
+   * Whether the chat is a group that may be put on the whitelist at all:
+   * basic groups and supergroups, never broadcast channels.
+   */
+  public static boolean isWhitelistableGroup (long chatId, @Nullable Tdlib tdlib) {
+    if (chatId == 0 || ChatId.isPrivate(chatId) || ChatId.isSecret(chatId)) return false;
+    return tdlib == null || !tdlib.isChannel(chatId);
   }
 
   // Sticker restriction ------------------------------------------------------
@@ -301,8 +349,8 @@ public final class ParentalPolicy {
 
   /**
    * Whether the chat itself is allowed to be visible / opened / written to.
-   * Stage 1: only private chats with allowed users. Groups (basic/supergroup non-channel),
-   * channels and secret chats are not allowed.
+   * Private chats with allowed users and groups whitelisted by the parent.
+   * Channels, secret chats and every other group are not allowed.
    */
   public boolean isChatAllowed (long chatId, @Nullable Tdlib tdlib) {
     if (!enabled) return true;
@@ -311,8 +359,8 @@ public final class ParentalPolicy {
     if (ChatId.isPrivate(chatId)) {
       return isUserAllowed(ChatId.toUserId(chatId), tdlib);
     }
-    // Groups and channels are not whitelisted in stage 1.
-    return false;
+    // Groups are allowed only when the parent whitelisted them; channels never.
+    return isGroupWhitelisted(chatId) && isWhitelistableGroup(chatId, tdlib);
   }
 
   public boolean canSendTo (long chatId, @Nullable Tdlib tdlib) {

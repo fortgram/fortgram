@@ -52,6 +52,9 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
         } else if (itemId == R.id.btn_parentalWhitelist) {
           int n = ParentalPolicy.instance().getManualUsers().length;
           v.setData(n > 0 ? Lang.plural(R.string.xUsers, n) : Lang.getString(R.string.ParentalWhitelistEmpty));
+        } else if (itemId == R.id.btn_parentalGroups) {
+          int n = ParentalPolicy.instance().getAllowedGroups().length;
+          v.setData(n > 0 ? Lang.getString(R.string.ParentalGroupsCount, n) : Lang.getString(R.string.ParentalGroupsNone));
         } else if (itemId == R.id.btn_parentalStickersRestrict) {
           v.getToggler().setRadioEnabled(ParentalPolicy.instance().isStickerRestrictionEnabled(), isUpdate);
         } else if (itemId == R.id.btn_parentalStickerWhitelist) {
@@ -71,6 +74,8 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
     items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_parentalAllowAddContact, 0, R.string.ParentalAllowAddContact));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
     items.add(new ListItem(ListItem.TYPE_VALUED_SETTING, R.id.btn_parentalWhitelist, R.drawable.baseline_person_add_24, R.string.ParentalWhitelistContacts));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_VALUED_SETTING, R.id.btn_parentalGroups, R.drawable.baseline_group_24, R.string.ParentalGroups));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalWhitelistModeHint));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalAllowAddContactHint));
@@ -114,6 +119,8 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
     } else if (viewId == R.id.btn_parentalWhitelist) {
       SettingsWhitelistController c = new SettingsWhitelistController(context, tdlib);
       navigateTo(c);
+    } else if (viewId == R.id.btn_parentalGroups) {
+      navigateTo(new SettingsGroupWhitelistController(context, tdlib));
     } else if (viewId == R.id.btn_parentalStickersRestrict) {
       ParentalPolicy.instance().setStickerRestrictionEnabled(!ParentalPolicy.instance().isStickerRestrictionEnabled());
       adapter.updateValuedSettingById(R.id.btn_parentalStickersRestrict);

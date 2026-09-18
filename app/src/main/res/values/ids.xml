@@ -1447,6 +1447,9 @@
   <item type="id" name="btn_parentalStickerWhitelist" />
   <item type="id" name="btn_parentalStickerWhitelistAdd" />
   <item type="id" name="btn_parentalStickerSetItem" />
+  <item type="id" name="btn_parentalGroups" />
+  <item type="id" name="btn_parentalGroupItem" />
+  <item type="id" name="controller_parentalGroups" />
   <item type="id" name="controller_parentalControls" />
   <item type="id" name="controller_parentalWhitelist" />
   <item type="id" name="controller_parentalStickerWhitelist" />
