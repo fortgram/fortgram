@@ -64,4 +64,8 @@
   <string name="ParentalExportCopied">Налаштування скопійовано</string>
   <string name="ParentalStickerFoundHeader">Знайдено в Telegram</string>
   <string name="ParentalStickerSearchEmpty">Нічого не знайдено</string>
+  <string name="ParentalExportFile">Зберегти у файл</string>
+  <string name="ParentalImportFile">З файлу</string>
+  <string name="ParentalExportSaved">Файл збережено</string>
+  <string name="ParentalFileError">Не вдалося записати або прочитати файл</string>
 </resources>
