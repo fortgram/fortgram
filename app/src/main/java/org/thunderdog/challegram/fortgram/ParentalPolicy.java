@@ -143,6 +143,26 @@ public final class ParentalPolicy {
     notifyChanged();
   }
 
+  /**
+   * Replaces the whole policy at once (import). Persists every key and notifies
+   * listeners a single time.
+   */
+  public void replaceAll (boolean enabled, boolean allowAddContact, long[] users, long[] groups, boolean stickersRestrict, long[] stickerSets) {
+    this.enabled = enabled;
+    this.allowAddContact = allowAddContact;
+    this.manualUsers = users != null ? users.clone() : new long[0];
+    this.allowedGroups = groups != null ? groups.clone() : new long[0];
+    this.stickersRestrict = stickersRestrict;
+    this.stickerWhitelist = stickerSets != null ? stickerSets.clone() : new long[0];
+    Settings.instance().putBoolean(KEY_ENABLED, enabled);
+    Settings.instance().putBoolean(KEY_ALLOW_ADD_CONTACT, allowAddContact);
+    Settings.instance().putLongArray(KEY_WHITELIST_USERS, this.manualUsers);
+    Settings.instance().putLongArray(KEY_WHITELIST_GROUPS, this.allowedGroups);
+    Settings.instance().putBoolean(KEY_STICKERS_RESTRICT, stickersRestrict);
+    Settings.instance().putLongArray(KEY_STICKERS_WHITELIST, this.stickerWhitelist);
+    notifyChanged();
+  }
+
   // Allowed groups -----------------------------------------------------------
 
   public long[] getAllowedGroups () {

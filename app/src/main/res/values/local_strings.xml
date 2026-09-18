@@ -65,4 +65,17 @@
   <string name="ParentalStickerOfficialAlways">Official — always allowed</string>
   <string name="ParentalStickerInstalledHeader">Installed packs</string>
   <string name="ParentalStickerBlocked">This sticker pack is restricted</string>
+  <string name="ParentalBackup">Backup</string>
+  <string name="ParentalExport">Export settings</string>
+  <string name="ParentalImport">Import settings</string>
+  <string name="ParentalExportHint">Export copies every parental setting except the PIN as text. Import replaces the current settings; users and sticker packs may be given by @username or pack name.</string>
+  <string name="ParentalExportCopy">Copy to clipboard</string>
+  <string name="ParentalExportShare">Share…</string>
+  <string name="ParentalImportClipboard">From clipboard</string>
+  <string name="ParentalImportPaste">Paste text</string>
+  <string name="ParentalImportInvalid">This is not a FortGram settings export</string>
+  <string name="ParentalImportConfirm">Replace the current parental settings with the imported ones?</string>
+  <string name="ParentalImportDone">Imported: %1$d users, %2$d groups, %3$d sticker packs</string>
+  <string name="ParentalImportUnresolved">Could not resolve %1$d entries</string>
+  <string name="ParentalExportCopied">Settings copied</string>
 </resources>

@@ -49,4 +49,17 @@
   <string name="ParentalStickerOfficialAlways">Официальный — разрешён всегда</string>
   <string name="ParentalStickerInstalledHeader">Установленные наборы</string>
   <string name="ParentalStickerBlocked">Этот стикерпак ограничен</string>
+  <string name="ParentalBackup">Резервная копия</string>
+  <string name="ParentalExport">Экспорт настроек</string>
+  <string name="ParentalImport">Импорт настроек</string>
+  <string name="ParentalExportHint">Экспорт копирует все настройки родительского контроля, кроме PIN, в виде текста. Импорт заменяет текущие настройки; пользователей и стикерпаки можно указывать по @username или имени набора.</string>
+  <string name="ParentalExportCopy">Скопировать в буфер обмена</string>
+  <string name="ParentalExportShare">Поделиться…</string>
+  <string name="ParentalImportClipboard">Из буфера обмена</string>
+  <string name="ParentalImportPaste">Вставить текст</string>
+  <string name="ParentalImportInvalid">Это не экспорт настроек FortGram</string>
+  <string name="ParentalImportConfirm">Заменить текущие настройки родительского контроля импортированными?</string>
+  <string name="ParentalImportDone">Импортировано: пользователей %1$d, групп %2$d, стикерпаков %3$d</string>
+  <string name="ParentalImportUnresolved">Не удалось распознать записей: %1$d</string>
+  <string name="ParentalExportCopied">Настройки скопированы</string>
 </resources>

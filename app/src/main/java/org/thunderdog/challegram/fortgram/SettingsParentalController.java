@@ -6,14 +6,21 @@
  */
 package org.thunderdog.challegram.fortgram;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.View;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.base.SettingView;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.telegram.Tdlib;
 import org.thunderdog.challegram.theme.ColorId;
+import org.thunderdog.challegram.tool.Intents;
+import org.thunderdog.challegram.tool.UI;
 import org.thunderdog.challegram.ui.ListItem;
 import org.thunderdog.challegram.ui.RecyclerViewController;
 import org.thunderdog.challegram.ui.SettingsAdapter;
@@ -88,6 +95,14 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalStickersRestrictHint));
 
+    items.add(new ListItem(ListItem.TYPE_HEADER, 0, 0, R.string.ParentalBackup));
+    items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalExport, R.drawable.baseline_share_24, R.string.ParentalExport));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalImport, R.drawable.baseline_content_paste_24, R.string.ParentalImport));
+    items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
+    items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalExportHint));
+
     items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
     items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalPinChange, R.drawable.baseline_lock_24, R.string.ParentalPinChange));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
@@ -107,6 +122,60 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
       adapter.updateValuedSettingById(R.id.btn_parentalGroups);
       adapter.updateValuedSettingById(R.id.btn_parentalStickerWhitelist);
     }
+  }
+
+  private void exportConfig (boolean share) {
+    ParentalConfig.export(tdlib, json -> runOnUiThreadOptional(() -> {
+      if (json == null) {
+        UI.showToast(R.string.ParentalImportInvalid, Toast.LENGTH_SHORT);
+      } else if (share) {
+        Intents.shareText(json);
+      } else {
+        UI.copyText(json, R.string.ParentalExportCopied);
+      }
+    }));
+  }
+
+  private @Nullable String readClipboard () {
+    ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    ClipData clip = cm != null ? cm.getPrimaryClip() : null;
+    if (clip == null || clip.getItemCount() == 0) return null;
+    CharSequence text = clip.getItemAt(0).coerceToText(context);
+    return text != null ? text.toString() : null;
+  }
+
+  private void importConfig (@Nullable String text) {
+    org.json.JSONObject root = ParentalConfig.parse(text);
+    if (root == null) {
+      UI.showToast(R.string.ParentalImportInvalid, Toast.LENGTH_SHORT);
+      return;
+    }
+    showConfirm(Lang.getString(R.string.ParentalImportConfirm),
+      Lang.getString(R.string.ParentalImport),
+      R.drawable.baseline_content_paste_24,
+      OptionColor.NORMAL,
+      () -> ParentalConfig.apply(root, tdlib, result -> runOnUiThreadOptional(() -> {
+        adapter.updateAllValuedSettings();
+        String msg = Lang.getString(R.string.ParentalImportDone, result.users, result.groups, result.stickerSets);
+        if (result.unresolved > 0) {
+          msg += "\n" + Lang.getString(R.string.ParentalImportUnresolved, result.unresolved);
+        }
+        UI.showToast(msg, Toast.LENGTH_LONG);
+        if (result.enabledChanged) {
+          promptRestart();
+        }
+      })));
+  }
+
+  private void promptRestart () {
+    showConfirm(Lang.getString(R.string.ParentalRestartRequired),
+      Lang.getString(R.string.ParentalRestartNow),
+      R.drawable.baseline_replay_24,
+      OptionColor.NORMAL,
+      () -> {
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(0);
+      });
   }
 
   @Override
@@ -138,6 +207,29 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
     } else if (viewId == R.id.btn_parentalStickerWhitelist) {
       SettingsStickerWhitelistController c = new SettingsStickerWhitelistController(context, tdlib);
       navigateTo(c);
+    } else if (viewId == R.id.btn_parentalExport) {
+      showOptions(null,
+        new int[] {R.id.btn_parentalExportCopy, R.id.btn_parentalExportShare},
+        new String[] {Lang.getString(R.string.ParentalExportCopy), Lang.getString(R.string.ParentalExportShare)},
+        (itemView, id) -> {
+          exportConfig(id == R.id.btn_parentalExportShare);
+          return true;
+        });
+    } else if (viewId == R.id.btn_parentalImport) {
+      showOptions(null,
+        new int[] {R.id.btn_parentalImportClipboard, R.id.btn_parentalImportPaste},
+        new String[] {Lang.getString(R.string.ParentalImportClipboard), Lang.getString(R.string.ParentalImportPaste)},
+        (itemView, id) -> {
+          if (id == R.id.btn_parentalImportClipboard) {
+            importConfig(readClipboard());
+          } else {
+            openInputAlert(Lang.getString(R.string.ParentalImport), "{…}", R.string.Done, R.string.Cancel, null, (input, text) -> {
+              importConfig(text);
+              return true;
+            }, true);
+          }
+          return true;
+        });
     } else if (viewId == R.id.btn_parentalPinChange) {
       ParentalPinGate.promptChangePin(this);
     } else if (viewId == R.id.btn_parentalPinDisable) {

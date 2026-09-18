@@ -1450,6 +1450,12 @@
   <item type="id" name="btn_parentalGroups" />
   <item type="id" name="btn_parentalGroupItem" />
   <item type="id" name="controller_parentalGroups" />
+  <item type="id" name="btn_parentalExport" />
+  <item type="id" name="btn_parentalExportCopy" />
+  <item type="id" name="btn_parentalExportShare" />
+  <item type="id" name="btn_parentalImport" />
+  <item type="id" name="btn_parentalImportClipboard" />
+  <item type="id" name="btn_parentalImportPaste" />
   <item type="id" name="controller_parentalControls" />
   <item type="id" name="controller_parentalWhitelist" />
   <item type="id" name="controller_parentalStickerWhitelist" />
