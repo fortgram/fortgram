@@ -27,6 +27,7 @@ import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.Log;
 import org.thunderdog.challegram.TDLib;
 import org.thunderdog.challegram.config.Config;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.tool.UI;
 import org.thunderdog.challegram.unsorted.Passcode;
 import org.thunderdog.challegram.unsorted.Settings;
@@ -81,9 +82,13 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
     return -1;
   }
 
-  private static boolean accept (TdApi.NotificationGroupType type) {
+  private boolean accept (TdApi.NotificationGroupType type, long chatId) {
     if (Config.FORCE_DISABLE_NOTIFICATIONS) {
       // Ignore all notifications in experimental builds
+      return false;
+    }
+    if (!ParentalPolicy.instance().isChatAllowed(chatId, tdlib)) {
+      // FortGram: chats hidden by parental controls must not leak through notifications
       return false;
     }
     switch (type.getConstructor()) {
@@ -145,7 +150,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
 
     boolean needRebuild = false;
     for (TdApi.NotificationGroup rawGroup : update.groups) {
-      if (accept(rawGroup.type)) {
+      if (accept(rawGroup.type, rawGroup.chatId)) {
         TdlibNotificationGroup group = new TdlibNotificationGroup(tdlib, rawGroup);
         if (!group.isEmpty()) {
           groups.put(rawGroup.id, group);
@@ -169,7 +174,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   private boolean haveRebuilt;
 
   public void updateGroup (TdApi.UpdateNotificationGroup update) {
-    if (!accept(update.type))
+    if (!accept(update.type, update.chatId))
       return;
     boolean isSilent = update.notificationSoundId == 0;
     if (!isSilent && update.notificationSettingsChatId != 0 && ChatId.isUserChat(update.notificationSettingsChatId) && tdlib.settings().needMuteNonContacts()) {
