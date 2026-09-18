@@ -78,4 +78,6 @@
   <string name="ParentalImportDone">Imported: %1$d users, %2$d groups, %3$d sticker packs</string>
   <string name="ParentalImportUnresolved">Could not resolve %1$d entries</string>
   <string name="ParentalExportCopied">Settings copied</string>
+  <string name="ParentalStickerFoundHeader">Found on Telegram</string>
+  <string name="ParentalStickerSearchEmpty">Nothing found</string>
 </resources>

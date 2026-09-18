@@ -62,4 +62,6 @@
   <string name="ParentalImportDone">Імпортовано: користувачів %1$d, груп %2$d, стікерпаків %3$d</string>
   <string name="ParentalImportUnresolved">Не вдалося розпізнати записів: %1$d</string>
   <string name="ParentalExportCopied">Налаштування скопійовано</string>
+  <string name="ParentalStickerFoundHeader">Знайдено в Telegram</string>
+  <string name="ParentalStickerSearchEmpty">Нічого не знайдено</string>
 </resources>

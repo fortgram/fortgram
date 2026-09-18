@@ -10,6 +10,7 @@ package org.thunderdog.challegram.fortgram;
 import android.content.Context;
 import android.util.LongSparseArray;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.base.SettingView;
 import org.thunderdog.challegram.component.sticker.TGStickerObj;
 import org.thunderdog.challegram.core.Lang;
+import org.thunderdog.challegram.navigation.HeaderView;
 import org.thunderdog.challegram.telegram.Tdlib;
 import org.thunderdog.challegram.tool.UI;
 import org.thunderdog.challegram.ui.ListItem;
@@ -36,6 +38,9 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
   private final LongSparseArray<TdApi.Sticker> resolvedCovers = new LongSparseArray<>();
   private final LongSparseArray<TGStickerObj> coverCache = new LongSparseArray<>();
   private boolean loaded;
+  private final LongSparseArray<TdApi.StickerSetInfo> foundSets = new LongSparseArray<>();
+  private @Nullable String searchQuery;
+  private int searchContextId;
 
   public SettingsStickerWhitelistController (Context context, Tdlib tdlib) {
     super(context, tdlib);
@@ -51,6 +56,95 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
     return R.id.controller_parentalStickerWhitelist;
   }
 
+  // Search -------------------------------------------------------------------
+
+  @Override
+  protected int getMenuId () {
+    return R.id.menu_search;
+  }
+
+  @Override
+  protected int getSearchMenuId () {
+    return R.id.menu_clear;
+  }
+
+  @Override
+  public void fillMenuItems (int id, HeaderView header, LinearLayout menu) {
+    if (id == R.id.menu_search) {
+      header.addSearchButton(menu, this);
+    } else if (id == R.id.menu_clear) {
+      header.addClearButton(menu, this);
+    }
+  }
+
+  @Override
+  public void onMenuItemPressed (int id, View view) {
+    if (id == R.id.menu_btn_search) {
+      if (headerView != null) {
+        headerView.openSearchMode();
+      }
+    } else if (id == R.id.menu_btn_clear) {
+      clearSearchInput();
+    }
+  }
+
+  @Override
+  protected void onLeaveSearchMode () {
+    searchQuery = null;
+    searchContextId++;
+    foundSets.clear();
+    rebuildItems();
+  }
+
+  @Override
+  protected void onSearchInputChanged (String query) {
+    super.onSearchInputChanged(query);
+    String q = query.trim();
+    searchQuery = q.isEmpty() ? null : q;
+    final int contextId = ++searchContextId;
+    foundSets.clear();
+    rebuildItems();
+    if (q.length() < 2) {
+      return;
+    }
+    // Public packs the child does not have installed yet (so the parent can allow them in advance).
+    tdlib.client().send(new TdApi.SearchStickerSets(new TdApi.StickerTypeRegular(), q), result -> runOnUiThreadOptional(() -> {
+      if (contextId != searchContextId) return;
+      if (result instanceof TdApi.StickerSets) {
+        for (TdApi.StickerSetInfo info : ((TdApi.StickerSets) result).sets) {
+          if (installedSets.get(info.id) == null) {
+            foundSets.put(info.id, info);
+            ParentalPolicy.instance().noteStickerSet(info.id, info.isOfficial);
+          }
+        }
+        rebuildItems();
+      }
+    }));
+  }
+
+  @Override
+  public boolean performOnBackPressed (boolean fromTop, boolean commit) {
+    if (inSearchMode()) {
+      if (commit) {
+        closeSearchMode(null);
+      }
+      return true;
+    }
+    return super.performOnBackPressed(fromTop, commit);
+  }
+
+  private boolean matchesSearch (@Nullable TdApi.StickerSetInfo info) {
+    if (searchQuery == null) return true;
+    if (info == null) return false;
+    String q = searchQuery.toLowerCase();
+    return (info.title != null && info.title.toLowerCase().contains(q)) || (info.name != null && info.name.toLowerCase().contains(q));
+  }
+
+  private @Nullable TdApi.StickerSetInfo infoFor (long setId) {
+    TdApi.StickerSetInfo info = installedSets.get(setId);
+    return info != null ? info : foundSets.get(setId);
+  }
+
   @Override
   protected void onCreateView (Context context, CustomRecyclerView recyclerView) {
     adapter = new SettingsAdapter(this) {
@@ -58,7 +152,7 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       public void setValuedSetting (ListItem item, SettingView v, boolean isUpdate) {
         if (item.getId() == R.id.btn_parentalStickerSetItem) {
           long setId = item.getLongId();
-          TdApi.StickerSetInfo info = installedSets.get(setId);
+          TdApi.StickerSetInfo info = infoFor(setId);
           String title = info != null ? info.title : resolvedTitles.get(setId);
           v.setName(title != null ? title : Lang.getString(R.string.ParentalStickerWhitelist));
           boolean official = info != null && info.isOfficial;
@@ -129,7 +223,7 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
     }
     TdApi.Sticker raw = null;
     TdApi.StickerType type = null;
-    TdApi.StickerSetInfo info = installedSets.get(setId);
+    TdApi.StickerSetInfo info = infoFor(setId);
     if (info != null) {
       if (info.covers != null && info.covers.length > 0) {
         raw = info.covers[0];
@@ -153,14 +247,20 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
     if (!loaded) return;
     List<ListItem> items = new ArrayList<>();
     items.add(new ListItem(ListItem.TYPE_EMPTY_OFFSET_SMALL));
-    items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-    items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalStickerWhitelistAdd, R.drawable.baseline_link_24, R.string.ParentalStickerWhitelistAdd));
-    items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
-    items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalStickerWhitelistAddHint));
+    final boolean searching = searchQuery != null;
+    if (!searching) {
+      items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+      items.add(new ListItem(ListItem.TYPE_SETTING, R.id.btn_parentalStickerWhitelistAdd, R.drawable.baseline_link_24, R.string.ParentalStickerWhitelistAdd));
+      items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
+      items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalStickerWhitelistAddHint));
+    }
 
     boolean headerAdded = false;
     for (int i = 0; i < installedSets.size(); i++) {
       TdApi.StickerSetInfo info = installedSets.valueAt(i);
+      if (!matchesSearch(info)) {
+        continue;
+      }
       if (!headerAdded) {
         items.add(new ListItem(ListItem.TYPE_HEADER, 0, 0, R.string.ParentalStickerInstalledHeader));
         items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
@@ -174,9 +274,25 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     }
 
+    boolean foundHeaderAdded = false;
+    for (int i = 0; i < foundSets.size(); i++) {
+      TdApi.StickerSetInfo info = foundSets.valueAt(i);
+      if (!foundHeaderAdded) {
+        items.add(new ListItem(ListItem.TYPE_HEADER, 0, 0, R.string.ParentalStickerFoundHeader));
+        items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+        foundHeaderAdded = true;
+      } else {
+        items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+      }
+      items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_TOGGLER, R.id.btn_parentalStickerSetItem, 0, 0).setLongId(info.id));
+    }
+    if (foundHeaderAdded) {
+      items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
+    }
+
     boolean extraHeaderAdded = false;
     for (long setId : ParentalPolicy.instance().getStickerWhitelist()) {
-      if (installedSets.get(setId) != null) {
+      if (searching || installedSets.get(setId) != null) {
         continue;
       }
       if (!extraHeaderAdded) {
@@ -192,8 +308,8 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     }
 
-    if (!headerAdded && !extraHeaderAdded) {
-      items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.ParentalStickerWhitelistEmpty));
+    if (!headerAdded && !foundHeaderAdded && !extraHeaderAdded) {
+      items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, searching ? R.string.ParentalStickerSearchEmpty : R.string.ParentalStickerWhitelistEmpty));
     }
 
     adapter.setItems(items, false);
@@ -208,7 +324,7 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       Object tag = v.getTag();
       if (!(tag instanceof ListItem)) return;
       long setId = ((ListItem) tag).getLongId();
-      TdApi.StickerSetInfo info = installedSets.get(setId);
+      TdApi.StickerSetInfo info = infoFor(setId);
       if (info != null && info.isOfficial) {
         UI.showToast(R.string.ParentalStickerOfficialAlways, Toast.LENGTH_SHORT);
         return;
