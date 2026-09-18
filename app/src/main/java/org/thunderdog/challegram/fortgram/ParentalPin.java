@@ -1,10 +1,10 @@
 /*
- * This file is a part of MiniGram (Telegram-X fork).
+ * This file is a part of FortGram (Telegram-X fork).
  *
  * Parental PIN — independent from app passcode. Gates access to
  * parental control settings only; does not lock the whole app.
  */
-package org.thunderdog.challegram.minigram;
+package org.thunderdog.challegram.fortgram;
 
 import android.content.SharedPreferences;
 
@@ -14,9 +14,9 @@ import org.thunderdog.challegram.unsorted.Settings;
 public final class ParentalPin {
   public static final int PIN_SIZE = 4;
 
-  private static final String SALT = "TWluaUdyYW0gcGFyZW50YWwgUElOIHNhbHQ=";
+  private static final String SALT = "Rm9ydEdyYW0gcGFyZW50YWwgUElOIHNhbHQ=";
 
-  private static final String KEY_HASH = "mg_par_pin_hash";
+  private static final String KEY_HASH = "fg_par_pin_hash";
 
   private static ParentalPin instance;
 

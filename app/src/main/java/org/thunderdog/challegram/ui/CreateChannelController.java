@@ -269,6 +269,11 @@ public class CreateChannelController extends ViewController<String[]> implements
       return;
     }
 
+    if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canJoinChannels()) {
+      org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoChannels);
+      return;
+    }
+
     String title = getTitle();
     if (StringUtils.isEmptyOrBlank(title))
       return;

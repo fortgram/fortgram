@@ -1416,9 +1416,20 @@
   <item type="id" name="btn_playback_speed_1_5" />
   <item type="id" name="btn_playback_speed_2_0" />
 
-  <!-- MiniGram: parental controls -->
+  <!-- FortGram: parental controls -->
   <item type="id" name="btn_parentalControls" />
   <item type="id" name="btn_parentalPinChange" />
   <item type="id" name="btn_parentalPinDisable" />
+  <item type="id" name="btn_parentalWhitelist" />
+  <item type="id" name="btn_parentalWhitelistToggle" />
+  <item type="id" name="btn_parentalAllowAddContact" />
+  <item type="id" name="btn_parentalWhitelistAdd" />
+  <item type="id" name="btn_parentalWhitelistUser" />
+  <item type="id" name="btn_parentalStickersRestrict" />
+  <item type="id" name="btn_parentalStickerWhitelist" />
+  <item type="id" name="btn_parentalStickerWhitelistAdd" />
+  <item type="id" name="btn_parentalStickerSetItem" />
   <item type="id" name="controller_parentalControls" />
+  <item type="id" name="controller_parentalWhitelist" />
+  <item type="id" name="controller_parentalStickerWhitelist" />
 </resources>

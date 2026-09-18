@@ -154,7 +154,11 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
   private ChatFilter filter;
 
   public TdApi.Chat filter (TdApi.Chat chat) {
-    return chat != null && (filter == null || filter.accept(chat)) && ChatPosition.findPosition(chat, chatList()) != null ? chat : null;
+    if (chat == null) return null;
+    if (filter != null && !filter.accept(chat)) return null;
+    if (ChatPosition.findPosition(chat, chatList()) == null) return null;
+    if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isChatAllowed(chat.id, tdlib)) return null;
+    return chat;
   }
 
   public @Nullable ChatFilter getFilter () {
@@ -460,7 +464,15 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
 
   public TdlibChatListSlice list () {
     if (list == null) {
-      this.list = tdlib.chatList(chatList()).slice(filter);
+      final ChatFilter inner = filter;
+      ChatFilter combined = new ChatFilter() {
+        @Override
+        public boolean accept (TdApi.Chat data) {
+          if (inner != null && !inner.accept(data)) return false;
+          return org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isChatAllowed(data.id, tdlib);
+        }
+      };
+      this.list = tdlib.chatList(chatList()).slice(combined);
     }
     return list;
   }

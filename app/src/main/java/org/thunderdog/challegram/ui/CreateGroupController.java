@@ -405,6 +405,11 @@ public class CreateGroupController extends ViewController<Void> implements EditH
       return;
     }
 
+    if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canCreateGroups()) {
+      org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoGroups);
+      return;
+    }
+
     headerCell.setInputEnabled(false);
     isCreating = true;
     currentImageFile = headerCell.getImageFile();

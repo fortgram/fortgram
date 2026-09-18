@@ -402,6 +402,18 @@ public class TdlibContactManager implements CleanupStartupDelegate {
   @TdlibThread
   void notifyContactStatusChanged (long userId, boolean isContact) {
     checkRegisteredCount();
+    if (isContact && org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isEnabled()) {
+      ensureChatVisibleInMainList(userId);
+    }
+  }
+
+  private void ensureChatVisibleInMainList (long userId) {
+    tdlib.client().send(new TdApi.CreatePrivateChat(userId, false), result -> {
+      if (result.getConstructor() == TdApi.Chat.CONSTRUCTOR) {
+        long chatId = ((TdApi.Chat) result).id;
+        tdlib.client().send(new TdApi.AddChatToList(chatId, new TdApi.ChatListMain()), tdlib.silentHandler());
+      }
+    });
   }
 
   private Client.ResultHandler newHandler () {

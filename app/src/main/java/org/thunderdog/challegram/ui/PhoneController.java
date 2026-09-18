@@ -893,6 +893,11 @@ public class PhoneController extends EditBaseController<Void> implements Setting
 
     switch (mode) {
       case MODE_ADD_CONTACT:
+        if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canAddContact()) {
+          org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoNewContact);
+          setInProgress(false);
+          return true;
+        }
         function = new TdApi.ImportContacts(new TdApi.ImportedContact[] {new TdApi.ImportedContact(phone, getFirstName(), getLastName(), null)});
         break;
       case MODE_CHANGE_NUMBER:

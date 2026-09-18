@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.drinkless.tdlib.Client;
 import org.drinkless.tdlib.TdApi;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.attach.CustomItemAnimator;
 import org.thunderdog.challegram.component.emoji.GifView;
@@ -582,6 +583,9 @@ public class EmojiMediaListController extends ViewController<EmojiLayout> implem
     int startIndex = offset + items.size();
     boolean first = true;
     for (TdApi.StickerSetInfo stickerSetInfo : stickerSets) {
+      if (!isEmojiStatuses && stickerSetInfo.stickerType.getConstructor() == TdApi.StickerTypeRegular.CONSTRUCTOR) {
+        ParentalPolicy.instance().noteStickerSet(stickerSetInfo.id, stickerSetInfo.isOfficial);
+      }
       if (!stickerSetInfo.isViewed) {
         unreadItemCount++;
       }
@@ -1293,6 +1297,10 @@ public class EmojiMediaListController extends ViewController<EmojiLayout> implem
       switch (object.getConstructor()) {
         case TdApi.StickerSets.CONSTRUCTOR: {
           TdApi.StickerSetInfo[] rawStickerSets = ((TdApi.StickerSets) object).sets;
+
+          for (TdApi.StickerSetInfo rawInfo : rawStickerSets) {
+            ParentalPolicy.instance().noteStickerSet(rawInfo.id, rawInfo.isOfficial);
+          }
 
           final TdApi.Sticker[] favoriteStickers = pendingFavoriteStickers;
           final TdApi.Sticker[] recentStickers = pendingRecentStickers;

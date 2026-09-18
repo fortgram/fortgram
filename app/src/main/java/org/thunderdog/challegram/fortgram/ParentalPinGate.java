@@ -1,11 +1,12 @@
 /*
- * This file is a part of MiniGram (Telegram-X fork).
+ * This file is a part of FortGram (Telegram-X fork).
  *
  * Helper for parental PIN dialogs: setup, unlock, change.
  * Built on top of ViewController.openInputAlert (numeric, 4 digits).
  */
-package org.thunderdog.challegram.minigram;
+package org.thunderdog.challegram.fortgram;
 
+import android.text.InputFilter;
 import android.text.InputType;
 import android.widget.Toast;
 
@@ -101,6 +102,7 @@ public final class ParentalPinGate {
   private static void configureAsPinInput (MaterialEditTextGroup input) {
     if (input == null) return;
     input.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+    input.getEditText().setFilters(new InputFilter[] {new InputFilter.LengthFilter(ParentalPin.PIN_SIZE)});
     input.setMaxLength(ParentalPin.PIN_SIZE);
   }
 }

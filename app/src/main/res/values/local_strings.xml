@@ -12,7 +12,7 @@
   <string name="EmulatorDetectorReport_title">False-positive emulator detection warning on %1$s \`%2$s\`</string>
   <string name="EmulatorDetectorReport_text">Hello. I use **Telegram X** on a real device, but it says I am running on an emulator.\n\n**My real device details:**\n\nName: %1$s \`%2$s\`\nProduct: \`%3$s\`\nDevice: \`%4$s\`\nHardware: \`%5$s\`\n\n**The app version I am using:**\n\n%6$s\n\n**Emulator detection result:** `%7$s`\n\nPlease take a look if this warning can be resolved for my device.\nThank you!</string>
 
-  <!-- MiniGram: parental controls -->
+  <!-- FortGram: parental controls -->
   <string name="ParentalControls">Parental Controls</string>
   <string name="ParentalPinSetupTitle">Set Parental PIN</string>
   <string name="ParentalPinSetupHint">Choose a 4-digit PIN to protect parental control settings</string>
@@ -23,4 +23,36 @@
   <string name="ParentalPinChange">Change PIN</string>
   <string name="ParentalPinDisable">Disable Parental Controls</string>
   <string name="ParentalPinDisableConfirm">Disable parental controls and remove PIN?</string>
+
+  <!-- FortGram: whitelist mode -->
+  <string name="ParentalWhitelistMode">Whitelist mode</string>
+  <string name="ParentalWhitelistModeHint">Child can only chat with phone contacts and explicitly allowed users. New groups, channels and secret chats are blocked.</string>
+  <string name="ParentalWhitelistContacts">Allowed contacts</string>
+  <string name="ParentalWhitelistEmpty">No additional users allowed. Phone contacts are allowed automatically.</string>
+  <string name="ParentalWhitelistContactsAuto">Allowed by phone contact</string>
+  <string name="ParentalWhitelistAddUser">Add allowed user</string>
+  <string name="ParentalWhitelistRemove">Remove from whitelist</string>
+  <string name="ParentalBlocked">Restricted by parental controls</string>
+  <string name="ParentalNoSecret">Secret chats are disabled</string>
+  <string name="ParentalNoChannels">Channels are disabled</string>
+  <string name="ParentalNoGroups">Creating groups is disabled</string>
+  <string name="ParentalNoNewContact">Adding contacts is disabled</string>
+  <string name="ParentalRestartRequired">Restart FortGram for the change to apply to existing chats</string>
+  <string name="ParentalRestartNow">Restart now</string>
+  <string name="ParentalAllowAddContact">Allow adding contacts</string>
+  <string name="ParentalAllowAddContactHint">When off, only the parent can add new contacts via parental settings.</string>
+
+  <string name="ParentalStickers">Stickers</string>
+  <string name="ParentalStickersRestrict">Official sticker packs only</string>
+  <string name="ParentalStickersRestrictHint">When on, the child sees and can send only official sticker packs plus the packs allowed below.</string>
+  <string name="ParentalStickerWhitelist">Allowed sticker packs</string>
+  <string name="ParentalStickerWhitelistAdd">Add by link</string>
+  <string name="ParentalStickerWhitelistAddHint">Paste a sticker pack link (t.me/addstickers/…) or its short name.</string>
+  <string name="ParentalStickerWhitelistEmpty">No additional packs allowed. Official packs are allowed automatically.</string>
+  <string name="ParentalStickerWhitelistCount">%1$d allowed</string>
+  <string name="ParentalStickerWhitelistRemove">Remove from allowed packs</string>
+  <string name="ParentalStickerSetNotFound">Sticker pack not found</string>
+  <string name="ParentalStickerOfficialAlways">Official — always allowed</string>
+  <string name="ParentalStickerInstalledHeader">Installed packs</string>
+  <string name="ParentalStickerBlocked">This sticker pack is restricted</string>
 </resources>

@@ -334,6 +334,10 @@ public class EditNameController extends EditBaseController<EditNameController.Ar
         case Mode.ADD_CONTACT:
         case Mode.RENAME_CONTACT: {
           if (user != null) {
+            if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canAddContact()) {
+              org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoNewContact);
+              break;
+            }
             setDoneInProgress(true);
             TdApi.ImportedContact contact = new TdApi.ImportedContact(
               !StringUtils.isEmpty(knownPhoneNumber) ? knownPhoneNumber : user.phoneNumber,

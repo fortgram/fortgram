@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.drinkless.tdlib.Client;
 import org.drinkless.tdlib.TdApi;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.attach.CustomItemAnimator;
 import org.thunderdog.challegram.component.sticker.StickerSetWrap;
@@ -400,6 +401,7 @@ public class StickersController extends RecyclerViewController<StickersControlle
           case MODE_STICKERS_ARCHIVED: {
             for (TdApi.StickerSetInfo info : sets) {
               if (info.isArchived) {
+                ParentalPolicy.instance().noteStickerSet(info.id, info.isOfficial);
                 TGStickerSetInfo stickerSet = new TGStickerSetInfo(tdlib, info);
                 stickerSet.setBoundList(stickerSets);
                 stickerSets.add(stickerSet);
@@ -410,6 +412,7 @@ public class StickersController extends RecyclerViewController<StickersControlle
           case MODE_STICKERS: {
             for (TdApi.StickerSetInfo info : sets) {
               if (!info.isArchived) {
+                ParentalPolicy.instance().noteStickerSet(info.id, info.isOfficial);
                 TGStickerSetInfo stickerSet = new TGStickerSetInfo(tdlib, info);
                 stickerSet.setBoundList(stickerSets);
                 stickerSets.add(stickerSet);

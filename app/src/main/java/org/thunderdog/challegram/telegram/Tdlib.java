@@ -70,6 +70,8 @@ import org.thunderdog.challegram.loader.ImageFile;
 import org.thunderdog.challegram.loader.ImageLoader;
 import org.thunderdog.challegram.loader.gif.GifBridge;
 import org.thunderdog.challegram.navigation.ViewController;
+import org.thunderdog.challegram.fortgram.ParentalGuard;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.sync.SyncHelper;
 import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.theme.Theme;
@@ -4698,8 +4700,36 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   }
 
   public void sendMessage (long chatId, @Nullable TdApi.MessageTopic topicId, @Nullable TdApi.InputMessageReplyTo replyTo, TdApi.MessageSendOptions options, TdApi.Sticker sticker, @Nullable String emoji) {
+    if (ParentalPolicy.instance().isStickerRestrictionEnabled() && !ParentalPolicy.instance().isStickerSetWhitelisted(sticker.setId)) {
+      long setId = sticker.setId;
+      Boolean official = setId != 0 ? ParentalPolicy.instance().knownOfficial(setId) : Boolean.FALSE;
+      if (official == null) {
+        client().send(new TdApi.GetStickerSet(setId), result -> {
+          boolean isOfficial = result instanceof TdApi.StickerSet && ((TdApi.StickerSet) result).isOfficial;
+          ParentalPolicy.instance().noteStickerSet(setId, isOfficial);
+          if (ParentalPolicy.instance().isStickerSetAllowed(setId, isOfficial)) {
+            sendMessage(chatId, topicId, replyTo, options, new TdApi.InputMessageSticker(new TdApi.InputFileId(sticker.sticker.id), null, 0, 0, emoji));
+          } else {
+            sendBlockedStickerAsEmoji(chatId, topicId, replyTo, options, sticker, emoji);
+          }
+        });
+        return;
+      } else if (!official) {
+        sendBlockedStickerAsEmoji(chatId, topicId, replyTo, options, sticker, emoji);
+        return;
+      }
+    }
     TdApi.InputMessageContent inputMessageContent = new TdApi.InputMessageSticker(new TdApi.InputFileId(sticker.sticker.id), null, 0, 0, emoji);
     sendMessage(chatId, topicId, replyTo, options, inputMessageContent);
+  }
+
+  private void sendBlockedStickerAsEmoji (long chatId, @Nullable TdApi.MessageTopic topicId, @Nullable TdApi.InputMessageReplyTo replyTo, TdApi.MessageSendOptions options, TdApi.Sticker sticker, @Nullable String emoji) {
+    String text = sticker.emoji != null && !sticker.emoji.isEmpty() ? sticker.emoji : emoji;
+    if (text != null && !text.isEmpty()) {
+      sendMessage(chatId, topicId, replyTo, options, new TdApi.InputMessageText(new TdApi.FormattedText(text, null), null, false));
+    } else {
+      ParentalGuard.denyToast(R.string.ParentalStickerBlocked);
+    }
   }
 
   public void sendMessage (long chatId, @Nullable TdApi.MessageTopic topicId, @Nullable TdApi.InputMessageReplyTo replyTo, TdApi.MessageSendOptions options, TdApi.InputMessageContent inputMessageContent) {
@@ -4707,6 +4737,10 @@ public class Tdlib implements TdlibProvider, Settings.SettingsChangeListener, Da
   }
 
   public void sendMessage (long chatId, @Nullable TdApi.MessageTopic topicId, @Nullable TdApi.InputMessageReplyTo replyTo, TdApi.MessageSendOptions options, TdApi.InputMessageContent inputMessageContent, @Nullable RunnableData<TdApi.Message> after) {
+    if (!ParentalPolicy.instance().canSendTo(chatId, this)) {
+      ParentalGuard.denyToast();
+      return;
+    }
     client().send(new TdApi.SendMessage(chatId, topicId, replyTo, options, null, inputMessageContent), after != null ? result -> {
       messageHandler.onResult(result);
       after.runWithData(result instanceof TdApi.Message ? (TdApi.Message) result : null);

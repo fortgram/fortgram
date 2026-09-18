@@ -32,6 +32,7 @@ import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.emoji.Emoji;
 import org.thunderdog.challegram.emoji.EmojiInfo;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.loader.ComplexReceiver;
 import org.thunderdog.challegram.loader.DoubleImageReceiver;
 import org.thunderdog.challegram.loader.ImageFile;
@@ -156,6 +157,30 @@ public class TGMessageSticker extends TGMessage implements AnimatedEmojiListener
 
       if (width > 0 && height > 0) {
         setSize(width, height);
+      }
+    }
+
+    private @Nullable EmojiInfo fallbackEmojiInfo;
+    private boolean fallbackEmojiComputed;
+
+    public boolean shouldRenderBlockedAsEmoji () {
+      return specialType == SPECIAL_TYPE_NONE && sticker != null
+        && ParentalPolicy.instance().shouldRenderStickerAsEmoji(sticker.setId);
+    }
+
+    public @Nullable EmojiInfo getFallbackEmojiInfo () {
+      if (!fallbackEmojiComputed) {
+        fallbackEmojiComputed = true;
+        if (emoji != null && !emoji.isEmpty()) {
+          fallbackEmojiInfo = Emoji.instance().getEmojiInfo(emoji);
+        }
+      }
+      return fallbackEmojiInfo;
+    }
+
+    public void resolveBlockedSet () {
+      if (sticker != null) {
+        ParentalPolicy.instance().resolveStickerSet(tdlib, sticker.setId, TGMessageSticker.this::postInvalidate);
       }
     }
 
@@ -677,6 +702,13 @@ public class TGMessageSticker extends TGMessage implements AnimatedEmojiListener
             if (representation.sticker == null && representation.emojiInfo != null) {
               tmpRect.set(left + Screen.dp(2), top + Screen.dp(2), right - Screen.dp(2), bottom - Screen.dp(2));
               Emoji.instance().draw(c, representation.emojiInfo, tmpRect);
+            } else if (representation.shouldRenderBlockedAsEmoji()) {
+              EmojiInfo fallback = representation.getFallbackEmojiInfo();
+              if (fallback != null) {
+                tmpRect.set(left + Screen.dp(2), top + Screen.dp(2), right - Screen.dp(2), bottom - Screen.dp(2));
+                Emoji.instance().draw(c, fallback, tmpRect);
+              }
+              representation.resolveBlockedSet();
             } else {
               DoubleImageReceiver preview = receiver.getPreviewReceiver(index);
               final Receiver target;

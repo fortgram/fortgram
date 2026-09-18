@@ -43,6 +43,19 @@ import tgx.td.ChatId;
 import tgx.td.Td;
 
 public class SearchManager {
+  private ArrayList<TGFoundChat> applyParentalFilter (ArrayList<TGFoundChat> source) {
+    if (source == null || source.isEmpty()) return source;
+    if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isEnabled()) return source;
+    ArrayList<TGFoundChat> filtered = new ArrayList<>(source.size());
+    for (TGFoundChat fc : source) {
+      long anyId = fc.getAnyId();
+      if (org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isChatAllowed(anyId, tdlib)) {
+        filtered.add(fc);
+      }
+    }
+    return filtered;
+  }
+
   public static abstract class Listener implements ListenerInterface {
     @Override
     public void onOpen () {
@@ -678,11 +691,12 @@ public class SearchManager {
     this.localChatsQuery = query;
   }
 
-  private void addMoreLocalChats (final int currentContextId, final @Nullable String query, final @Nullable ArrayList<TGFoundChat> chats) {
+  private void addMoreLocalChats (final int currentContextId, final @Nullable String query, @Nullable ArrayList<TGFoundChat> chats) {
     if (this.contextId != currentContextId) {
       return;
     }
 
+    chats = applyParentalFilter(chats);
     final int oldLocalChatCount = this.localChats != null ? this.localChats.size() : 0;
     if (oldLocalChatCount == 0) {
       setLocalChats(currentContextId, query, chats);
@@ -695,11 +709,12 @@ public class SearchManager {
     }
   }
 
-  private void setLocalChats (final int currentContextId, final @Nullable String query, final @Nullable ArrayList<TGFoundChat> chats) {
+  private void setLocalChats (final int currentContextId, final @Nullable String query, @Nullable ArrayList<TGFoundChat> chats) {
     if (this.contextId != currentContextId) {
       return;
     }
 
+    chats = applyParentalFilter(chats);
     final int oldLocalChatCount = this.localChats != null ? this.localChats.size() : 0;
     setLocalChats(chats, query);
     final int newLocalChatCount = chats != null ? chats.size() : 0;
@@ -897,6 +912,7 @@ public class SearchManager {
       return;
     }
 
+    chats = applyParentalFilter(chats);
     final int oldGlobalChatCount = this.globalChats != null ? this.globalChats.size() : 0;
     this.globalChats = chats;
     final int newGlobalChatCount = chats != null ? chats.size() : 0;

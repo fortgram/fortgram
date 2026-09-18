@@ -978,8 +978,8 @@ public class DrawerController extends ViewController<Void> implements View.OnCli
 
   private void openSettings () {
     Runnable open = () -> openController(new SettingsController(context, context.currentTdlib()));
-    if (org.thunderdog.challegram.minigram.ParentalPin.instance().isSet()) {
-      org.thunderdog.challegram.minigram.ParentalPinGate.promptUnlock(this, open::run);
+    if (org.thunderdog.challegram.fortgram.ParentalPin.instance().isSet()) {
+      org.thunderdog.challegram.fortgram.ParentalPinGate.promptUnlock(this, open::run);
     } else {
       open.run();
     }

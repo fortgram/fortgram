@@ -921,6 +921,10 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
         tdlib.ui().openPrivateChat(this, user.id, null);
       }
     } else if (id == R.id.btn_float_addContact) {
+      if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canAddContact()) {
+        org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoNewContact);
+        return false;
+      }
       navigateTo(new PhoneController(context, tdlib).setMode(PhoneController.MODE_ADD_CONTACT));
     } else if (id == R.id.btn_float_call) {
       ContactsController c = new ContactsController(context, tdlib);
@@ -932,12 +936,24 @@ public class MainController extends ViewPagerController<Void> implements Menu, M
       }
       return false;
     } else if (id == R.id.btn_float_newChannel) {
+      if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canJoinChannels()) {
+        org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoChannels);
+        return false;
+      }
       navigateTo(new CreateChannelController(context, tdlib));
     } else if (id == R.id.btn_float_newGroup) {
+      if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canCreateGroups()) {
+        org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoGroups);
+        return false;
+      }
       ContactsController c = new ContactsController(context, tdlib);
       c.initWithMode(ContactsController.MODE_NEW_GROUP);
       navigateTo(c);
     } else if (id == R.id.btn_float_newSecretChat) {
+      if (!org.thunderdog.challegram.fortgram.ParentalPolicy.instance().canCreateSecret()) {
+        org.thunderdog.challegram.fortgram.ParentalGuard.denyToast(R.string.ParentalNoSecret);
+        return false;
+      }
       ContactsController c = new ContactsController(context, tdlib);
       c.initWithMode(ContactsController.MODE_NEW_SECRET_CHAT);
       navigateTo(c);

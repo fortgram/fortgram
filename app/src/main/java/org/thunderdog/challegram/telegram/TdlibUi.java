@@ -67,6 +67,8 @@ import org.thunderdog.challegram.data.TGMessage;
 import org.thunderdog.challegram.data.TGSwitchInline;
 import org.thunderdog.challegram.data.ThreadInfo;
 import org.thunderdog.challegram.mediaview.MediaViewController;
+import org.thunderdog.challegram.fortgram.ParentalGuard;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.navigation.HeaderView;
 import org.thunderdog.challegram.navigation.NavigationController;
 import org.thunderdog.challegram.navigation.NavigationStack;
@@ -1999,6 +2001,10 @@ public class TdlibUi extends Handler {
   }
 
   public void openChat (final TdlibDelegate context, final @NonNull TdApi.Chat chatFinal, final @Nullable ChatOpenParameters params) {
+    if (!ParentalPolicy.instance().isChatAllowed(chatFinal.id, tdlib)) {
+      ParentalGuard.denyToast();
+      return;
+    }
     if (params != null && params.highlightMessageId != null) {
       params.highlightMessageId = new MessageId(chatFinal.id, params.highlightMessageId.getMessageId(), params.highlightMessageId.getOtherMessageIds());
     }
@@ -2371,6 +2377,10 @@ public class TdlibUi extends Handler {
   }
 
   public void openChat (final TdlibDelegate context, final long chatId, final @Nullable ChatOpenParameters params) {
+    if (chatId != 0 && !ParentalPolicy.instance().isChatAllowed(chatId, tdlib)) {
+      ParentalGuard.denyToast();
+      return;
+    }
     openChat(context, chatId, new TdApi.GetChat(chatId), params);
   }
 
@@ -2518,6 +2528,10 @@ public class TdlibUi extends Handler {
   }
 
   public void openPrivateChat (final TdlibDelegate context, final long userId, final @Nullable ChatOpenParameters openParameters) {
+    if (!ParentalPolicy.instance().isUserAllowed(userId, tdlib)) {
+      ParentalGuard.denyToast();
+      return;
+    }
     openChat(context, ChatId.fromUserId(userId), new TdApi.CreatePrivateChat(userId, false), openParameters);
   }
 
@@ -2540,6 +2554,10 @@ public class TdlibUi extends Handler {
   }
 
   public void startSecretChat (final TdlibDelegate context, final long userId, final boolean allowExisting, final @Nullable ChatOpenParameters params) {
+    if (!ParentalPolicy.instance().canCreateSecret()) {
+      ParentalGuard.denyToast(R.string.ParentalNoSecret);
+      return;
+    }
     // TODO open existing active secret chat if allowExisting == true
     // TODO progress
     tdlib.client().send(new TdApi.CreateNewSecretChat(userId), object -> {
@@ -2606,6 +2624,10 @@ public class TdlibUi extends Handler {
   }
 
   private void checkChatInviteLink (final TdlibDelegate context, final String inviteLink, final @Nullable UrlOpenParameters openParameters) {
+    if (ParentalPolicy.instance().isEnabled()) {
+      ParentalGuard.denyToast();
+      return;
+    }
     // TODO progress
     tdlib.client().send(new TdApi.CheckChatInviteLink(inviteLink), object -> {
       switch (object.getConstructor()) {
@@ -3502,6 +3524,13 @@ public class TdlibUi extends Handler {
       return;
     }
     if (context.context().navigation().isDestroyed()) {
+      if (after != null) {
+        after.runWithBool(false);
+      }
+      return;
+    }
+    if (!ParentalPolicy.instance().isLinkTypeAllowed(linkType)) {
+      ParentalGuard.denyToast();
       if (after != null) {
         after.runWithBool(false);
       }

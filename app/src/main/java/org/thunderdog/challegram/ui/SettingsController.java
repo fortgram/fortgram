@@ -1227,11 +1227,11 @@ public class SettingsController extends ViewController<Void> implements
     } else if (viewId == R.id.btn_privacySettings) {
       navigateTo(new SettingsPrivacyController(context, tdlib));
     } else if (viewId == R.id.btn_parentalControls) {
-      Runnable openParental = () -> navigateTo(new org.thunderdog.challegram.minigram.SettingsParentalController(context, tdlib));
-      if (org.thunderdog.challegram.minigram.ParentalPin.instance().isSet()) {
+      Runnable openParental = () -> navigateTo(new org.thunderdog.challegram.fortgram.SettingsParentalController(context, tdlib));
+      if (org.thunderdog.challegram.fortgram.ParentalPin.instance().isSet()) {
         openParental.run();
       } else {
-        org.thunderdog.challegram.minigram.ParentalPinGate.promptSetup(this, openParental::run);
+        org.thunderdog.challegram.fortgram.ParentalPinGate.promptSetup(this, openParental::run);
       }
     } else if (viewId == R.id.btn_help) {
       supportOpen = tdlib.ui().openSupport(this);

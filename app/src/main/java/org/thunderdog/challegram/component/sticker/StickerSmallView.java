@@ -17,6 +17,7 @@ package org.thunderdog.challegram.component.sticker;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,9 @@ import org.thunderdog.challegram.BaseActivity;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.data.TGReaction;
+import org.thunderdog.challegram.emoji.Emoji;
+import org.thunderdog.challegram.emoji.EmojiInfo;
+import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.loader.ImageFile;
 import org.thunderdog.challegram.loader.ImageReceiver;
 import org.thunderdog.challegram.loader.gif.GifFile;
@@ -62,6 +66,8 @@ public class StickerSmallView extends View implements FactorAnimator.Target, Sti
   private final FactorAnimator animator;
   private @Nullable TGStickerObj sticker;
   private @Nullable Drawable premiumStarDrawable;
+  private @Nullable EmojiInfo fallbackEmojiInfo;
+  private final Rect fallbackEmojiRect = new Rect();
   private Path contour;
   private Tdlib tdlib;
   private int padding;
@@ -97,6 +103,13 @@ public class StickerSmallView extends View implements FactorAnimator.Target, Sti
   public void setSticker (@Nullable TGStickerObj sticker) {
     this.sticker = sticker;
     this.isAnimation = sticker != null && sticker.isAnimated();
+    this.fallbackEmojiInfo = null;
+    if (sticker != null && sticker.getSticker() != null) {
+      String emoji = sticker.getSticker().emoji;
+      if (emoji != null && !emoji.isEmpty()) {
+        this.fallbackEmojiInfo = Emoji.instance().getEmojiInfo(emoji);
+      }
+    }
     resetStickerState();
     ImageFile imageFile = sticker != null && !sticker.isEmpty() ? sticker.getImage() : null;
     GifFile gifFile = sticker != null && !sticker.isEmpty() ? sticker.getPreviewAnimation() : null;
@@ -254,7 +267,15 @@ public class StickerSmallView extends View implements FactorAnimator.Target, Sti
       float scale = originalScale * (MIN_SCALE + (1f - MIN_SCALE) * (1f - factor));
       c.scale(scale, scale, cx, cy);
     }
-    if (premiumStarDrawable != null) {
+    if (sticker != null && sticker.getSticker() != null && ParentalPolicy.instance().shouldRenderStickerAsEmoji(sticker.getStickerSetId())) {
+      long setId = sticker.getStickerSetId();
+      ParentalPolicy.instance().resolveStickerSet(tdlib, setId, this::postInvalidate);
+      if (fallbackEmojiInfo != null) {
+        int size = Math.min(imageReceiver.getWidth(), imageReceiver.getHeight());
+        fallbackEmojiRect.set(cx - size / 2, cy - size / 2, cx + size / 2, cy + size / 2);
+        Emoji.instance().draw(c, fallbackEmojiInfo, fallbackEmojiRect);
+      }
+    } else if (premiumStarDrawable != null) {
       Drawables.drawCentered(c, premiumStarDrawable, cx, cy, PorterDuffPaint.get(themedColorId));
     } else if (isAnimation) {
       if (gifReceiver.needPlaceholder()) {
