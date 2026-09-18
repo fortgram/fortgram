@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# MiniGram host setup script.
+# FortGram host setup script.
 # Bootstraps a fresh Ubuntu/Debian host with all dependencies needed to build
-# MiniGram (Telegram-X fork) for arm64-v8a + armeabi-v7a, sign the APK with
+# FortGram (Telegram-X fork) for arm64-v8a + armeabi-v7a, sign the APK with
 # a debug keystore, and produce an installable file.
 #
 # Usage:
@@ -28,7 +28,7 @@ KEYSTORE_PASS="${KEYSTORE_PASS:-android}"
 KEY_ALIAS="${KEY_ALIAS:-androiddebugkey}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-APK_OUT="${APK_OUT:-$HOME/MiniGram-signed.apk}"
+APK_OUT="${APK_OUT:-$HOME/FortGram-signed.apk}"
 
 # ---------- Logging helpers ----------
 log () { echo -e "\033[1;36m[setup]\033[0m $*"; }
@@ -92,8 +92,8 @@ write_local_properties () {
   cat > "$f" <<EOF
 sdk.dir=$ANDROID_SDK_ROOT
 
-app.id=org.example.minigram
-app.name=MiniGram
+app.id=org.example.fortgram
+app.name=FortGram
 app.download_url=https://telegram.org/dlx
 app.disable_signing=true
 
@@ -150,7 +150,7 @@ gradle_build () {
 
 # ---------- Step 8: sign APK ----------
 sign_apk () {
-  local apk_in="$REPO_DIR/app/build/outputs/apk/latestUniversal/release/MiniGram-0.28.8.1787.apk"
+  local apk_in="$REPO_DIR/app/build/outputs/apk/latestUniversal/release/FortGram-0.28.8.1787.apk"
   [ -f "$apk_in" ] || err "Built APK not found: $apk_in"
 
   log "Signing APK -> $APK_OUT"

@@ -17,4 +17,7 @@ obj
 /captures
 /local.properties
 
+# Local docs / agent context that may contain machine-specific paths or api_id
+/CLAUDE.md
+
 libc++_shared.so

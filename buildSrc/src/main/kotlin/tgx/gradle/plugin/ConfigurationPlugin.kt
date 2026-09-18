@@ -65,7 +65,9 @@ open class ConfigurationPlugin : Plugin<Project> {
     val huaweiAppGalleryUrl = properties.getProperty("app.huawei_download_url", null)
     val amazonAppStoreUrl = properties.getProperty("app.amazon_download_url", null)
     val isExampleBuild = applicationId.startsWith("com.example.") || applicationId.startsWith("org.example.")
-    val isExperimentalBuild = isExampleBuild || keystore == null || properties.getProperty("app.experimental", "false") == "true"
+    // FortGram: force production-grade build despite org.example.* package and disabled signing config
+    val forceProductionBuild = properties.getProperty("app.force_production_build", "false") == "true"
+    val isExperimentalBuild = !forceProductionBuild && (isExampleBuild || keystore == null || properties.getProperty("app.experimental", "false") == "true")
     val doNotObfuscate = isExampleBuild || properties.getProperty("app.dontobfuscate", "false") == "true"
     val forceOptimize = properties.getProperty("app.forceoptimize") == "true"
     val appExtension = getOrSample("tgx.extension")
