@@ -84,4 +84,7 @@
   <string name="ParentalImportFile">From file</string>
   <string name="ParentalExportSaved">File saved</string>
   <string name="ParentalFileError">Could not read or write the file</string>
+  <string name="ParentalExportQr">Show QR code</string>
+  <string name="ParentalImportQr">Scan QR code</string>
+  <string name="ParentalExportQrTooLarge">Too many entries for a QR code — save to a file instead</string>
 </resources>

@@ -68,4 +68,7 @@
   <string name="ParentalImportFile">Из файла</string>
   <string name="ParentalExportSaved">Файл сохранён</string>
   <string name="ParentalFileError">Не удалось записать или прочитать файл</string>
+  <string name="ParentalExportQr">Показать QR-код</string>
+  <string name="ParentalImportQr">Сканировать QR-код</string>
+  <string name="ParentalExportQrTooLarge">Слишком много записей для QR-кода — сохраните в файл</string>
 </resources>

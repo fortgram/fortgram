@@ -1455,6 +1455,8 @@
   <item type="id" name="btn_parentalExportShare" />
   <item type="id" name="btn_parentalImport" />
   <item type="id" name="btn_parentalExportFile" />
+  <item type="id" name="btn_parentalExportQr" />
+  <item type="id" name="btn_parentalImportQr" />
   <item type="id" name="btn_parentalImportFile" />
   <item type="id" name="btn_parentalImportClipboard" />
   <item type="id" name="btn_parentalImportPaste" />

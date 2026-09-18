@@ -10,8 +10,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,7 +25,9 @@ import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.telegram.Tdlib;
 import org.thunderdog.challegram.theme.ColorId;
 import org.thunderdog.challegram.tool.Intents;
+import org.thunderdog.challegram.tool.Screen;
 import org.thunderdog.challegram.tool.UI;
+import org.thunderdog.challegram.ui.camera.CameraController;
 import org.thunderdog.challegram.ui.ListItem;
 import org.thunderdog.challegram.ui.RecyclerViewController;
 import org.thunderdog.challegram.ui.SettingsAdapter;
@@ -141,6 +146,8 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
     ParentalConfig.export(tdlib, json -> runOnUiThreadOptional(() -> {
       if (json == null) {
         UI.showToast(R.string.ParentalImportInvalid, Toast.LENGTH_SHORT);
+      } else if (targetId == R.id.btn_parentalExportQr) {
+        showQr(json);
       } else if (targetId == R.id.btn_parentalExportFile) {
         openExportFilePicker(json);
       } else if (targetId == R.id.btn_parentalExportShare) {
@@ -149,6 +156,44 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
         UI.copyText(json, R.string.ParentalExportCopied);
       }
     }));
+  }
+
+  private void showQr (String json) {
+    String compact = ParentalConfig.toCompact(json);
+    if (compact == null) {
+      UI.showToast(R.string.ParentalExportQrTooLarge, Toast.LENGTH_LONG);
+      return;
+    }
+    Bitmap bitmap;
+    try {
+      int size = Math.min(Screen.currentWidth(), Screen.currentHeight()) - Screen.dp(48f);
+      java.util.Map<com.google.zxing.EncodeHintType, Object> hints = new java.util.HashMap<>();
+      hints.put(com.google.zxing.EncodeHintType.MARGIN, 1);
+      hints.put(com.google.zxing.EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.L);
+      com.google.zxing.common.BitMatrix matrix = new com.google.zxing.qrcode.QRCodeWriter().encode(compact, com.google.zxing.BarcodeFormat.QR_CODE, size, size, hints);
+      bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
+      int[] row = new int[size];
+      for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+          row[x] = matrix.get(x, y) ? Color.BLACK : Color.WHITE;
+        }
+        bitmap.setPixels(row, 0, size, 0, y, size, 1);
+      }
+    } catch (Throwable t) {
+      UI.showToast(R.string.ParentalExportQrTooLarge, Toast.LENGTH_LONG);
+      return;
+    }
+    ImageView view = new ImageView(context);
+    view.setImageBitmap(bitmap);
+    view.setBackgroundColor(Color.WHITE);
+    int pad = Screen.dp(16f);
+    view.setPadding(pad, pad, pad, pad);
+    view.setAdjustViewBounds(true);
+    android.app.AlertDialog.Builder b = new android.app.AlertDialog.Builder(context);
+    b.setTitle(Lang.getString(R.string.ParentalExportQr));
+    b.setView(view);
+    b.setPositiveButton(Lang.getString(R.string.Done), (dialog, which) -> dialog.dismiss());
+    showAlert(b);
   }
 
   // File export / import via the system document picker (no storage permission needed).
@@ -216,7 +261,7 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
   }
 
   private void importConfig (@Nullable String text) {
-    org.json.JSONObject root = ParentalConfig.parse(text);
+    org.json.JSONObject root = ParentalConfig.parse(ParentalConfig.fromCompact(text));
     if (root == null) {
       UI.showToast(R.string.ParentalImportInvalid, Toast.LENGTH_SHORT);
       return;
@@ -280,18 +325,20 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
       navigateTo(c);
     } else if (viewId == R.id.btn_parentalExport) {
       showOptions(null,
-        new int[] {R.id.btn_parentalExportFile, R.id.btn_parentalExportCopy, R.id.btn_parentalExportShare},
-        new String[] {Lang.getString(R.string.ParentalExportFile), Lang.getString(R.string.ParentalExportCopy), Lang.getString(R.string.ParentalExportShare)},
+        new int[] {R.id.btn_parentalExportQr, R.id.btn_parentalExportFile, R.id.btn_parentalExportCopy, R.id.btn_parentalExportShare},
+        new String[] {Lang.getString(R.string.ParentalExportQr), Lang.getString(R.string.ParentalExportFile), Lang.getString(R.string.ParentalExportCopy), Lang.getString(R.string.ParentalExportShare)},
         (itemView, id) -> {
           exportConfig(id);
           return true;
         });
     } else if (viewId == R.id.btn_parentalImport) {
       showOptions(null,
-        new int[] {R.id.btn_parentalImportFile, R.id.btn_parentalImportClipboard, R.id.btn_parentalImportPaste},
-        new String[] {Lang.getString(R.string.ParentalImportFile), Lang.getString(R.string.ParentalImportClipboard), Lang.getString(R.string.ParentalImportPaste)},
+        new int[] {R.id.btn_parentalImportQr, R.id.btn_parentalImportFile, R.id.btn_parentalImportClipboard, R.id.btn_parentalImportPaste},
+        new String[] {Lang.getString(R.string.ParentalImportQr), Lang.getString(R.string.ParentalImportFile), Lang.getString(R.string.ParentalImportClipboard), Lang.getString(R.string.ParentalImportPaste)},
         (itemView, id) -> {
-          if (id == R.id.btn_parentalImportFile) {
+          if (id == R.id.btn_parentalImportQr) {
+            openInAppCamera(new CameraOpenOptions().anchor(itemView).noTrace(true).allowSystem(false).optionalMicrophone(true).mode(CameraController.MODE_QR).qrCodeListener(qrCode -> runOnUiThreadOptional(() -> importConfig(qrCode))));
+          } else if (id == R.id.btn_parentalImportFile) {
             openImportFilePicker();
           } else if (id == R.id.btn_parentalImportClipboard) {
             importConfig(readClipboard());

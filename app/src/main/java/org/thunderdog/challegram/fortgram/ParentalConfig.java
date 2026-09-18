@@ -18,11 +18,15 @@ import org.json.JSONObject;
 import org.thunderdog.challegram.data.TD;
 import org.thunderdog.challegram.telegram.Tdlib;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import me.vkryl.core.lambda.RunnableData;
 
@@ -108,6 +112,65 @@ public final class ParentalConfig {
     stickers.put("sets", sets);
     root.put("stickers", stickers);
     return root.toString(2);
+  }
+
+  // Compact (QR) form --------------------------------------------------------
+
+  private static final String COMPACT_PREFIX = "FGP1:";
+  /** Byte-mode QR capacity at version 40 / level L is 2953 bytes; keep a margin. */
+  public static final int COMPACT_MAX_LENGTH = 2800;
+
+  /** JSON → deflate → base64url, prefixed so a scanner can tell it apart from other QR codes. */
+  public static @Nullable String toCompact (@NonNull String json) {
+    try {
+      byte[] input;
+      // Re-serialise without indentation to save space.
+      try {
+        input = new JSONObject(json).toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+      } catch (JSONException e) {
+        input = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+      }
+      Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
+      deflater.setInput(input);
+      deflater.finish();
+      ByteArrayOutputStream out = new ByteArrayOutputStream(input.length);
+      byte[] buf = new byte[4096];
+      while (!deflater.finished()) {
+        out.write(buf, 0, deflater.deflate(buf));
+      }
+      deflater.end();
+      String encoded = android.util.Base64.encodeToString(out.toByteArray(), android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
+      String compact = COMPACT_PREFIX + encoded;
+      return compact.length() <= COMPACT_MAX_LENGTH ? compact : null;
+    } catch (Throwable t) {
+      return null;
+    }
+  }
+
+  /** Accepts either the compact QR form or plain JSON; returns JSON text or null. */
+  public static @Nullable String fromCompact (@Nullable String text) {
+    if (text == null) return null;
+    String trimmed = text.trim();
+    if (!trimmed.startsWith(COMPACT_PREFIX)) {
+      return trimmed;
+    }
+    try {
+      byte[] data = android.util.Base64.decode(trimmed.substring(COMPACT_PREFIX.length()), android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
+      Inflater inflater = new Inflater(true);
+      inflater.setInput(data);
+      ByteArrayOutputStream out = new ByteArrayOutputStream(data.length * 4);
+      byte[] buf = new byte[4096];
+      while (!inflater.finished()) {
+        int n = inflater.inflate(buf);
+        if (n == 0 && (inflater.needsInput() || inflater.needsDictionary())) break;
+        out.write(buf, 0, n);
+        if (out.size() > 4_000_000) return null;
+      }
+      inflater.end();
+      return new String(out.toByteArray(), java.nio.charset.StandardCharsets.UTF_8);
+    } catch (DataFormatException | IllegalArgumentException e) {
+      return null;
+    }
   }
 
   // Import -------------------------------------------------------------------
