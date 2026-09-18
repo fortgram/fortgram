@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- FortGram: parental controls (ru). DO NOT SYNC WITH TRANSLATIONS PLATFORM -->
+  <string name="ParentalControls">Родительский контроль</string>
+  <string name="ParentalPinSetupTitle">Задайте родительский PIN</string>
+  <string name="ParentalPinSetupHint">Придумайте 4-значный PIN для защиты настроек родительского контроля</string>
+  <string name="ParentalPinConfirmHint">Повторите PIN для подтверждения</string>
+  <string name="ParentalPinUnlockHint">Введите родительский PIN</string>
+  <string name="ParentalPinMismatch">PIN-коды не совпадают. Попробуйте ещё раз.</string>
+  <string name="ParentalPinWrong">Неверный PIN</string>
+  <string name="ParentalPinChange">Сменить PIN</string>
+  <string name="ParentalPinDisable">Отключить родительский контроль</string>
+  <string name="ParentalPinDisableConfirm">Отключить родительский контроль и удалить PIN?</string>
+  <string name="ParentalWhitelistMode">Режим белого списка</string>
+  <string name="ParentalWhitelistModeHint">Ребёнок может общаться только с контактами из телефонной книги, с явно разрешёнными пользователями и в разрешённых ниже группах. Остальные группы, каналы и секретные чаты скрыты.</string>
+  <string name="ParentalWhitelistContacts">Разрешённые контакты</string>
+  <string name="ParentalWhitelistEmpty">Дополнительно разрешённых пользователей нет. Контакты из телефонной книги разрешены автоматически.</string>
+  <string name="ParentalWhitelistContactsAuto">Разрешён как контакт телефона</string>
+  <string name="ParentalWhitelistAddUser">Добавить разрешённого пользователя</string>
+  <string name="ParentalWhitelistRemove">Убрать из белого списка</string>
+  <string name="ParentalBlocked">Ограничено родительским контролем</string>
+  <string name="ParentalNoSecret">Секретные чаты отключены</string>
+  <string name="ParentalNoChannels">Каналы отключены</string>
+  <string name="ParentalNoGroups">Создание групп отключено</string>
+  <string name="ParentalNoNewContact">Добавление контактов отключено</string>
+  <string name="ParentalRestartRequired">Перезапустите FortGram, чтобы изменение применилось к существующим чатам</string>
+  <string name="ParentalRestartNow">Перезапустить сейчас</string>
+  <string name="ParentalAllowAddContact">Разрешить добавление контактов</string>
+  <string name="ParentalAllowAddContactHint">Если выключено, новые контакты может добавлять только родитель через настройки родительского контроля.</string>
+  <string name="ParentalGroups">Разрешённые группы</string>
+  <string name="ParentalGroupsNone">Нет</string>
+  <string name="ParentalGroupsCount">Разрешено: %1$d</string>
+  <string name="ParentalGroupsHeader">Группы, в которых состоит ребёнок</string>
+  <string name="ParentalGroupsHint">Ребёнок может читать и писать только в группах, включённых здесь. Вступление по ссылке и создание групп остаются заблокированными: добавьте ребёнка в группу со своего аккаунта, а затем разрешите её здесь. Каналы никогда не показываются.</string>
+  <string name="ParentalGroupsEmpty">Ребёнок пока не состоит ни в одной группе.</string>
+  <string name="ParentalGroupUnavailable">Группа больше недоступна</string>
+  <string name="ParentalStickers">Стикеры</string>
+  <string name="ParentalStickersRestrict">Только официальные стикерпаки</string>
+  <string name="ParentalStickersRestrictHint">Если включено, ребёнок видит и может отправлять только официальные стикерпаки и наборы, разрешённые ниже.</string>
+  <string name="ParentalStickerWhitelist">Разрешённые стикерпаки</string>
+  <string name="ParentalStickerWhitelistAdd">Добавить по ссылке</string>
+  <string name="ParentalStickerWhitelistAddHint">Вставьте ссылку на стикерпак (t.me/addstickers/…) или его короткое имя.</string>
+  <string name="ParentalStickerWhitelistEmpty">Дополнительно разрешённых наборов нет. Официальные наборы разрешены автоматически.</string>
+  <string name="ParentalStickerWhitelistCount">Разрешено: %1$d</string>
+  <string name="ParentalStickerWhitelistRemove">Убрать из разрешённых</string>
+  <string name="ParentalStickerAllowed">Разрешён</string>
+  <string name="ParentalStickerNotAllowed">Не разрешён</string>
+  <string name="ParentalStickerSetNotFound">Стикерпак не найден</string>
+  <string name="ParentalStickerOfficialAlways">Официальный — разрешён всегда</string>
+  <string name="ParentalStickerInstalledHeader">Установленные наборы</string>
+  <string name="ParentalStickerBlocked">Этот стикерпак ограничен</string>
+</resources>

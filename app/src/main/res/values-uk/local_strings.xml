@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- FortGram: parental controls (uk). DO NOT SYNC WITH TRANSLATIONS PLATFORM -->
+  <string name="ParentalControls">Батьківський контроль</string>
+  <string name="ParentalPinSetupTitle">Задайте батьківський PIN</string>
+  <string name="ParentalPinSetupHint">Придумайте 4-значний PIN для захисту налаштувань батьківського контролю</string>
+  <string name="ParentalPinConfirmHint">Повторіть PIN для підтвердження</string>
+  <string name="ParentalPinUnlockHint">Введіть батьківський PIN</string>
+  <string name="ParentalPinMismatch">PIN-коди не збігаються. Спробуйте ще раз.</string>
+  <string name="ParentalPinWrong">Неправильний PIN</string>
+  <string name="ParentalPinChange">Змінити PIN</string>
+  <string name="ParentalPinDisable">Вимкнути батьківський контроль</string>
+  <string name="ParentalPinDisableConfirm">Вимкнути батьківський контроль і видалити PIN?</string>
+  <string name="ParentalWhitelistMode">Режим білого списку</string>
+  <string name="ParentalWhitelistModeHint">Дитина може спілкуватися лише з контактами з телефонної книги, з явно дозволеними користувачами та в дозволених нижче групах. Інші групи, канали та секретні чати приховано.</string>
+  <string name="ParentalWhitelistContacts">Дозволені контакти</string>
+  <string name="ParentalWhitelistEmpty">Додатково дозволених користувачів немає. Контакти з телефонної книги дозволено автоматично.</string>
+  <string name="ParentalWhitelistContactsAuto">Дозволено як контакт телефону</string>
+  <string name="ParentalWhitelistAddUser">Додати дозволеного користувача</string>
+  <string name="ParentalWhitelistRemove">Прибрати з білого списку</string>
+  <string name="ParentalBlocked">Обмежено батьківським контролем</string>
+  <string name="ParentalNoSecret">Секретні чати вимкнено</string>
+  <string name="ParentalNoChannels">Канали вимкнено</string>
+  <string name="ParentalNoGroups">Створення груп вимкнено</string>
+  <string name="ParentalNoNewContact">Додавання контактів вимкнено</string>
+  <string name="ParentalRestartRequired">Перезапустіть FortGram, щоб зміна застосувалася до наявних чатів</string>
+  <string name="ParentalRestartNow">Перезапустити зараз</string>
+  <string name="ParentalAllowAddContact">Дозволити додавання контактів</string>
+  <string name="ParentalAllowAddContactHint">Якщо вимкнено, нові контакти може додавати лише батько чи мати через налаштування батьківського контролю.</string>
+  <string name="ParentalGroups">Дозволені групи</string>
+  <string name="ParentalGroupsNone">Немає</string>
+  <string name="ParentalGroupsCount">Дозволено: %1$d</string>
+  <string name="ParentalGroupsHeader">Групи, у яких перебуває дитина</string>
+  <string name="ParentalGroupsHint">Дитина може читати й писати лише в групах, увімкнених тут. Приєднання за посиланням і створення груп залишаються заблокованими: додайте дитину до групи зі свого акаунта, а потім дозвольте її тут. Канали ніколи не показуються.</string>
+  <string name="ParentalGroupsEmpty">Дитина поки не перебуває в жодній групі.</string>
+  <string name="ParentalGroupUnavailable">Група більше недоступна</string>
+  <string name="ParentalStickers">Стікери</string>
+  <string name="ParentalStickersRestrict">Лише офіційні стікерпаки</string>
+  <string name="ParentalStickersRestrictHint">Якщо ввімкнено, дитина бачить і може надсилати лише офіційні стікерпаки та набори, дозволені нижче.</string>
+  <string name="ParentalStickerWhitelist">Дозволені стікерпаки</string>
+  <string name="ParentalStickerWhitelistAdd">Додати за посиланням</string>
+  <string name="ParentalStickerWhitelistAddHint">Вставте посилання на стікерпак (t.me/addstickers/…) або його коротку назву.</string>
+  <string name="ParentalStickerWhitelistEmpty">Додатково дозволених наборів немає. Офіційні набори дозволено автоматично.</string>
+  <string name="ParentalStickerWhitelistCount">Дозволено: %1$d</string>
+  <string name="ParentalStickerWhitelistRemove">Прибрати з дозволених</string>
+  <string name="ParentalStickerAllowed">Дозволено</string>
+  <string name="ParentalStickerNotAllowed">Не дозволено</string>
+  <string name="ParentalStickerSetNotFound">Стікерпак не знайдено</string>
+  <string name="ParentalStickerOfficialAlways">Офіційний — дозволено завжди</string>
+  <string name="ParentalStickerInstalledHeader">Установлені набори</string>
+  <string name="ParentalStickerBlocked">Цей стікерпак обмежено</string>
+</resources>
