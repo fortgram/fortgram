@@ -66,8 +66,9 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
             v.setData(R.string.ParentalStickerOfficialAlways);
             v.getToggler().setRadioEnabled(true, isUpdate);
           } else {
-            v.setData(R.string.ParentalStickerWhitelistRemove);
-            v.getToggler().setRadioEnabled(ParentalPolicy.instance().isStickerSetWhitelisted(setId), isUpdate);
+            boolean allowed = ParentalPolicy.instance().isStickerSetWhitelisted(setId);
+            v.setData(allowed ? R.string.ParentalStickerAllowed : R.string.ParentalStickerNotAllowed);
+            v.getToggler().setRadioEnabled(allowed, isUpdate);
           }
           TGStickerObj cover = getCover(setId);
           if (cover != null) {
@@ -167,7 +168,7 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       } else {
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
       }
-      items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_parentalStickerSetItem, 0, 0).setLongId(info.id));
+      items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_TOGGLER, R.id.btn_parentalStickerSetItem, 0, 0).setLongId(info.id));
     }
     if (headerAdded) {
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
@@ -185,7 +186,7 @@ public class SettingsStickerWhitelistController extends RecyclerViewController<V
       } else {
         items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
       }
-      items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_parentalStickerSetItem, 0, 0).setLongId(setId));
+      items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT_WITH_TOGGLER, R.id.btn_parentalStickerSetItem, 0, 0).setLongId(setId));
     }
     if (extraHeaderAdded) {
       items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));

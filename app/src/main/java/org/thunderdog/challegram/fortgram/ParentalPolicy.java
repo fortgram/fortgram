@@ -356,6 +356,8 @@ public final class ParentalPolicy {
     if (!enabled) return true;
     if (chatId == 0) return false;
     if (ChatId.isSecret(chatId)) return false;
+    // Telegram service notifications (login codes etc.) must always reach the child.
+    if (tdlib != null && tdlib.isServiceNotificationsChat(chatId)) return true;
     if (ChatId.isPrivate(chatId)) {
       return isUserAllowed(ChatId.toUserId(chatId), tdlib);
     }

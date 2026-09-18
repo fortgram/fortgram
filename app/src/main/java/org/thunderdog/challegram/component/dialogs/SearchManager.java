@@ -1027,7 +1027,7 @@ public class SearchManager {
             for (TdApi.Message message : foundMessages.messages) {
               if (chat == null || chat.id != message.chatId)
                 chat = tdlib.chat(message.chatId);
-              if (listener.filterMessageSearchResultSource(chat)) {
+              if (listener.filterMessageSearchResultSource(chat) && org.thunderdog.challegram.fortgram.ParentalPolicy.instance().isChatAllowed(message.chatId, tdlib)) {
                 foundMessageList.add(new TGFoundMessage(tdlib, chatList, chat, message, query));
               }
             }

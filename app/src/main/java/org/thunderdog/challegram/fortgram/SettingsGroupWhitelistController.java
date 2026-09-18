@@ -56,7 +56,6 @@ public class SettingsGroupWhitelistController extends RecyclerViewController<Voi
           TdApi.Chat chat = tdlib.chat(chatId);
           if (chat != null) {
             v.setName(chat.title);
-            v.setData(R.string.Group);
           } else {
             v.setName(Long.toString(chatId));
             v.setData(R.string.ParentalGroupUnavailable);

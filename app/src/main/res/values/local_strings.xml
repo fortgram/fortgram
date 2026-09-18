@@ -59,6 +59,8 @@
   <string name="ParentalStickerWhitelistEmpty">No additional packs allowed. Official packs are allowed automatically.</string>
   <string name="ParentalStickerWhitelistCount">%1$d allowed</string>
   <string name="ParentalStickerWhitelistRemove">Remove from allowed packs</string>
+  <string name="ParentalStickerAllowed">Allowed</string>
+  <string name="ParentalStickerNotAllowed">Not allowed</string>
   <string name="ParentalStickerSetNotFound">Sticker pack not found</string>
   <string name="ParentalStickerOfficialAlways">Official — always allowed</string>
   <string name="ParentalStickerInstalledHeader">Installed packs</string>

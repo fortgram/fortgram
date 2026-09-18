@@ -99,6 +99,17 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
   }
 
   @Override
+  public void onFocus () {
+    super.onFocus();
+    // Counters may have changed on the child screens (whitelist / groups / sticker packs).
+    if (adapter != null) {
+      adapter.updateValuedSettingById(R.id.btn_parentalWhitelist);
+      adapter.updateValuedSettingById(R.id.btn_parentalGroups);
+      adapter.updateValuedSettingById(R.id.btn_parentalStickerWhitelist);
+    }
+  }
+
+  @Override
   public void onClick (View v) {
     final int viewId = v.getId();
     if (viewId == R.id.btn_parentalWhitelistToggle) {
