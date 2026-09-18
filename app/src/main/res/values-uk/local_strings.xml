@@ -71,4 +71,5 @@
   <string name="ParentalExportQr">Показати QR-код</string>
   <string name="ParentalImportQr">Сканувати QR-код</string>
   <string name="ParentalExportQrTooLarge">Забагато записів для QR-коду — збережіть у файл</string>
+  <string name="ParentalImportQrHint">Наведіть камеру на QR-код з експорту налаштувань батьківського контролю FortGram.</string>
 </resources>

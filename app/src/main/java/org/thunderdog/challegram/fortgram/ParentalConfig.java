@@ -116,7 +116,13 @@ public final class ParentalConfig {
 
   // Compact (QR) form --------------------------------------------------------
 
-  private static final String COMPACT_PREFIX = "FGP1:";
+  /**
+   * Looks like a tg:// link on purpose: the in-app QR scanner only reports codes
+   * that start with tg:// or t.me, and a stock Telegram client simply ignores an
+   * unknown tg:// path.
+   */
+  private static final String COMPACT_PREFIX = "tg://fgram/parental?p=";
+  private static final String COMPACT_PREFIX_V0 = "FGP1:";
   /** Byte-mode QR capacity at version 40 / level L is 2953 bytes; keep a margin. */
   public static final int COMPACT_MAX_LENGTH = 2800;
 
@@ -151,11 +157,12 @@ public final class ParentalConfig {
   public static @Nullable String fromCompact (@Nullable String text) {
     if (text == null) return null;
     String trimmed = text.trim();
-    if (!trimmed.startsWith(COMPACT_PREFIX)) {
+    String prefix = trimmed.startsWith(COMPACT_PREFIX) ? COMPACT_PREFIX : trimmed.startsWith(COMPACT_PREFIX_V0) ? COMPACT_PREFIX_V0 : null;
+    if (prefix == null) {
       return trimmed;
     }
     try {
-      byte[] data = android.util.Base64.decode(trimmed.substring(COMPACT_PREFIX.length()), android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
+      byte[] data = android.util.Base64.decode(trimmed.substring(prefix.length()), android.util.Base64.URL_SAFE | android.util.Base64.NO_WRAP | android.util.Base64.NO_PADDING);
       Inflater inflater = new Inflater(true);
       inflater.setInput(data);
       ByteArrayOutputStream out = new ByteArrayOutputStream(data.length * 4);

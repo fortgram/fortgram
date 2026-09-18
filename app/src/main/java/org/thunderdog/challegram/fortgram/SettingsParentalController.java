@@ -337,7 +337,7 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
         new String[] {Lang.getString(R.string.ParentalImportQr), Lang.getString(R.string.ParentalImportFile), Lang.getString(R.string.ParentalImportClipboard), Lang.getString(R.string.ParentalImportPaste)},
         (itemView, id) -> {
           if (id == R.id.btn_parentalImportQr) {
-            openInAppCamera(new CameraOpenOptions().anchor(itemView).noTrace(true).allowSystem(false).optionalMicrophone(true).mode(CameraController.MODE_QR).qrCodeListener(qrCode -> runOnUiThreadOptional(() -> importConfig(qrCode))));
+            openInAppCamera(new CameraOpenOptions().anchor(itemView).noTrace(true).allowSystem(false).optionalMicrophone(true).mode(CameraController.MODE_QR).qrModeSubtitle(R.string.ParentalImportQrHint).qrCodeListener(qrCode -> runOnUiThreadOptional(() -> importConfig(qrCode))));
           } else if (id == R.id.btn_parentalImportFile) {
             openImportFilePicker();
           } else if (id == R.id.btn_parentalImportClipboard) {

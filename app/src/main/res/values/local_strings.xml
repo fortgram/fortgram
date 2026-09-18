@@ -87,4 +87,5 @@
   <string name="ParentalExportQr">Show QR code</string>
   <string name="ParentalImportQr">Scan QR code</string>
   <string name="ParentalExportQrTooLarge">Too many entries for a QR code — save to a file instead</string>
+  <string name="ParentalImportQrHint">Point the camera at a QR code from FortGram parental settings export.</string>
 </resources>
