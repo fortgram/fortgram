@@ -72,4 +72,6 @@
   <string name="ParentalImportQr">Сканувати QR-код</string>
   <string name="ParentalExportQrTooLarge">Забагато записів для QR-коду — збережіть у файл</string>
   <string name="ParentalImportQrHint">Наведіть камеру на QR-код з експорту налаштувань батьківського контролю FortGram.</string>
+  <string name="ParentalImportPreviewHint">Зніміть позначки з того, що імпортувати не потрібно. Застосування замінить поточні налаштування батьківського контролю.</string>
+  <string name="ParentalImportApply">Застосувати</string>
 </resources>

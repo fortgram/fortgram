@@ -1456,6 +1456,11 @@
   <item type="id" name="btn_parentalImport" />
   <item type="id" name="btn_parentalExportFile" />
   <item type="id" name="btn_parentalExportQr" />
+  <item type="id" name="btn_parentalImportUser" />
+  <item type="id" name="btn_parentalImportGroup" />
+  <item type="id" name="btn_parentalImportSet" />
+  <item type="id" name="btn_parentalImportApply" />
+  <item type="id" name="controller_parentalImportPreview" />
   <item type="id" name="btn_parentalImportQr" />
   <item type="id" name="btn_parentalImportFile" />
   <item type="id" name="btn_parentalImportClipboard" />

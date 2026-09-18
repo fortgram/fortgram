@@ -266,32 +266,10 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
       UI.showToast(R.string.ParentalImportInvalid, Toast.LENGTH_SHORT);
       return;
     }
-    showConfirm(Lang.getString(R.string.ParentalImportConfirm),
-      Lang.getString(R.string.ParentalImport),
-      R.drawable.baseline_content_paste_24,
-      OptionColor.NORMAL,
-      () -> ParentalConfig.apply(root, tdlib, result -> runOnUiThreadOptional(() -> {
-        adapter.updateAllValuedSettings();
-        String msg = Lang.getString(R.string.ParentalImportDone, result.users, result.groups, result.stickerSets);
-        if (result.unresolved > 0) {
-          msg += "\n" + Lang.getString(R.string.ParentalImportUnresolved, result.unresolved);
-        }
-        UI.showToast(msg, Toast.LENGTH_LONG);
-        if (result.enabledChanged) {
-          promptRestart();
-        }
-      })));
-  }
-
-  private void promptRestart () {
-    showConfirm(Lang.getString(R.string.ParentalRestartRequired),
-      Lang.getString(R.string.ParentalRestartNow),
-      R.drawable.baseline_replay_24,
-      OptionColor.NORMAL,
-      () -> {
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(0);
-      });
+    // Show what the file contains and let the parent untick entries before applying.
+    SettingsImportPreviewController c = new SettingsImportPreviewController(context, tdlib);
+    c.setArguments(root);
+    navigateTo(c);
   }
 
   @Override
@@ -337,7 +315,11 @@ public class SettingsParentalController extends RecyclerViewController<Void> imp
         new String[] {Lang.getString(R.string.ParentalImportQr), Lang.getString(R.string.ParentalImportFile), Lang.getString(R.string.ParentalImportClipboard), Lang.getString(R.string.ParentalImportPaste)},
         (itemView, id) -> {
           if (id == R.id.btn_parentalImportQr) {
-            openInAppCamera(new CameraOpenOptions().anchor(itemView).noTrace(true).allowSystem(false).optionalMicrophone(true).mode(CameraController.MODE_QR).qrModeSubtitle(R.string.ParentalImportQrHint).qrCodeListener(qrCode -> runOnUiThreadOptional(() -> importConfig(qrCode))));
+            openInAppCamera(new CameraOpenOptions().anchor(itemView).noTrace(true).allowSystem(false).optionalMicrophone(true).mode(CameraController.MODE_QR).qrModeSubtitle(R.string.ParentalImportQrHint).qrCodeListener(qrCode -> {
+              // Let the camera popup close first: opening our confirmation synchronously made the
+              // camera's own back-press dismiss the confirmation instead and left the scanner running.
+              UI.post(() -> runOnUiThreadOptional(() -> importConfig(qrCode)), 600L);
+            }));
           } else if (id == R.id.btn_parentalImportFile) {
             openImportFilePicker();
           } else if (id == R.id.btn_parentalImportClipboard) {
