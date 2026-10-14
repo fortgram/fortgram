@@ -24,11 +24,11 @@ set -euo pipefail
 # ---------- Configuration ----------
 ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/android-sdk}"
 JAVA_HOME_DEFAULT="/usr/lib/jvm/java-21-openjdk-amd64"
-GRADLE_TASK="${GRADLE_TASK:-assembleLatestArm64Release}"
+GRADLE_TASK="${GRADLE_TASK:-assembleFortgramArm64Release}"
 KEYSTORE_PROPERTIES="${KEYSTORE_PROPERTIES:-$HOME/keystore.properties}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-APK_DIR="$REPO_DIR/app/build/outputs/apk/latestArm64/release"
+APK_DIR="$REPO_DIR/app/build/outputs/apk/fortgramArm64/release"
 
 # ---------- Logging helpers ----------
 log () { echo -e "\033[1;36m[setup]\033[0m $*"; }

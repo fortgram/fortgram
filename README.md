@@ -64,7 +64,7 @@ Upstream is kept as close to 1:1 as possible so that new Telegram X versions can
 
 The build is the upstream Telegram X build: Gradle compiles the native dependencies itself, and the SDK, NDK and
 build-tools versions are pinned in `version.properties`. Official FortGram builds are made on macOS (Apple
-Silicon); Ubuntu is the second supported path. Either way the result is `./gradlew assembleLatestArm64Release`.
+Silicon); Ubuntu is the second supported path. Either way the result is `./gradlew assembleFortgramArm64Release`.
 
 ### Option A — macOS
 
@@ -75,7 +75,7 @@ Silicon); Ubuntu is the second supported path. Either way the result is `./gradl
 4. Clone with submodules: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
 5. Android SDK + NDK: choose a directory, `export ANDROID_SDK_ROOT=<that directory>`, then run `scripts/setup-sdk.sh`
    from the repository root — it downloads the command-line tools, platform, build-tools and the pinned NDK into it.
-6. Do the **common steps** below, then `./gradlew assembleLatestArm64Release`.
+6. Do the **common steps** below, then `./gradlew assembleFortgramArm64Release`.
 
 ### Option B — Ubuntu
 
@@ -100,7 +100,7 @@ the Android SDK + NDK, a `local.properties` template, submodules, and the build.
 - Push notifications need your own Firebase project: replace `app/google-services.json` (the committed one is for
   `org.fgram.app`) and register the FCM service account at my.telegram.org for your `api_id`.
 
-The APK lands in `app/build/outputs/apk/latestArm64/release/`. The first build compiles the native dependencies
+The APK lands in `app/build/outputs/apk/fortgramArm64/release/`. The first build compiles the native dependencies
 (about 7 minutes on an M1 Pro, over an hour on a 4-core cloud VM); later builds take a minute or two. The upstream
 [Telegram X README](https://github.com/TGX-Android/Telegram-X#readme) covers the build system, flavours and ABIs
 in more depth.
@@ -184,7 +184,7 @@ Android и сам откажется ставить поверх установ�
 
 Сборка — это сборка Telegram X: Gradle сам компилирует нативные зависимости, а версии SDK, NDK и build-tools
 зафиксированы в `version.properties`. Официальные сборки FortGram делаются на macOS (Apple Silicon); второй
-поддерживаемый путь — Ubuntu. В обоих случаях итог один: `./gradlew assembleLatestArm64Release`.
+поддерживаемый путь — Ubuntu. В обоих случаях итог один: `./gradlew assembleFortgramArm64Release`.
 
 ### Вариант A — macOS
 
@@ -195,7 +195,7 @@ Android и сам откажется ставить поверх установ�
 4. Клонирование с сабмодулями: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
 5. Android SDK + NDK: выберите каталог, `export ANDROID_SDK_ROOT=<этот каталог>` и запустите `scripts/setup-sdk.sh`
    из корня репозитория — он скачает туда command-line tools, платформу, build-tools и зафиксированный NDK.
-6. Выполните **общие шаги** ниже, затем `./gradlew assembleLatestArm64Release`.
+6. Выполните **общие шаги** ниже, затем `./gradlew assembleFortgramArm64Release`.
 
 ### Вариант B — Ubuntu
 
@@ -220,7 +220,7 @@ Android SDK + NDK, шаблон `local.properties`, сабмодули и сам
 - Для push-уведомлений нужен свой проект Firebase: замените `app/google-services.json` (закоммиченный — для
   `org.fgram.app`) и зарегистрируйте сервисный аккаунт FCM на my.telegram.org для своего `api_id`.
 
-APK появится в `app/build/outputs/apk/latestArm64/release/`. Первая сборка компилирует нативные зависимости
+APK появится в `app/build/outputs/apk/fortgramArm64/release/`. Первая сборка компилирует нативные зависимости
 (около 7 минут на M1 Pro, больше часа на 4-ядерной облачной VM), последующие занимают минуту-две. Система сборки,
 флейворы и ABI подробнее описаны в [README Telegram X](https://github.com/TGX-Android/Telegram-X#readme).
 

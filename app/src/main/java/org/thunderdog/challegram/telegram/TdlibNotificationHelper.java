@@ -29,6 +29,7 @@ import org.thunderdog.challegram.TDLib;
 import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.fortgram.ParentalPolicy;
 import org.thunderdog.challegram.tool.UI;
+import org.thunderdog.challegram.unsorted.AppContext;
 import org.thunderdog.challegram.unsorted.Passcode;
 import org.thunderdog.challegram.unsorted.Settings;
 
@@ -140,7 +141,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   public void abortCancelableOperations () {
-    Context context = UI.getAppContext();
+    Context context = AppContext.get();
     style.cancelPendingMediaPreviewDownloads(context, this);
   }
 
@@ -556,7 +557,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   // Impl
 
   private void displayNotificationGroup (@NonNull TdlibNotificationGroup group, boolean needNotification, long notificationSettingsChatId) {
-    Context context = UI.getAppContext();
+    Context context = AppContext.get();
     int badgeCount = tdlib.getUnreadBadgeCount();
     boolean allowPreview = allowNotificationPreview();
     TdlibNotificationSettings settings = needNotification && !group.isHidden() ? new TdlibNotificationSettings(tdlib, notificationSettingsChatId, group) : null;
@@ -565,7 +566,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   }
 
   private void hideNotificationGroup (@NonNull TdlibNotificationGroup group) {
-    Context context = UI.getAppContext();
+    Context context = AppContext.get();
     int badgeCount = tdlib.getUnreadBadgeCount();
     boolean allowPreview = allowNotificationPreview();
     style.hideNotificationGroup(context, this, badgeCount, allowPreview, group);
@@ -575,7 +576,7 @@ public class TdlibNotificationHelper implements Iterable<TdlibNotificationGroup>
   private void rebuild (@Nullable TdApi.NotificationSettingsScope scope, long specificChatId, int specificGroupId) {
     final boolean haveNotifications = !isEmpty();
     if (haveNotifications) {
-      Context context = UI.getAppContext();
+      Context context = AppContext.get();
       int badgeCount = tdlib.getUnreadBadgeCount();
       boolean allowPreview = allowNotificationPreview();
       style.rebuildNotificationsSilently(context, this, badgeCount, allowPreview, scope, specificChatId, specificGroupId);
