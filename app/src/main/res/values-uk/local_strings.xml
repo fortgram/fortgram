@@ -8,6 +8,7 @@
   <string name="ParentalPinUnlockHint">Введіть батьківський PIN</string>
   <string name="ParentalPinMismatch">PIN-коди не збігаються. Спробуйте ще раз.</string>
   <string name="ParentalPinWrong">Неправильний PIN</string>
+  <string name="ParentalPinLocked">Забагато невірних спроб. Спробуйте через %1$s.</string>
   <string name="ParentalPinChange">Змінити PIN</string>
   <string name="ParentalPinDisable">Вимкнути батьківський контроль</string>
   <string name="ParentalPinDisableConfirm">Вимкнути батьківський контроль і видалити PIN?</string>
