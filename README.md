@@ -62,29 +62,46 @@ Upstream is kept as close to 1:1 as possible so that new Telegram X versions can
 
 ## Building
 
-The build is the upstream Telegram X build (Gradle; native dependencies are compiled by Gradle tasks). Official
-FortGram builds are made on macOS (Apple Silicon); Linux works the same way. What you need:
+The build is the upstream Telegram X build: Gradle compiles the native dependencies itself, and the SDK, NDK and
+build-tools versions are pinned in `version.properties`. Official FortGram builds are made on macOS (Apple
+Silicon); Ubuntu is the second supported path. Either way the result is `./gradlew assembleLatestArm64Release`.
 
-1. **macOS:** Xcode Command Line Tools with the licence accepted (`sudo xcodebuild -license accept` — otherwise
-   the libvpx `make` step fails) and, via Homebrew, `brew install git-lfs wget gnu-sed`.
-   **Linux (Ubuntu):** `scripts/setup-host.sh` installs everything below and builds in one go.
-2. JDK 21 and the Android SDK with the NDK version pinned in `version.properties` — `scripts/setup-sdk.sh`
-   downloads them into `ANDROID_SDK_ROOT`.
-3. `local.properties` — copy `local.properties.sample` and fill in:
-   - `app.id` — **your own package name**; `org.fgram.app` belongs to the official builds;
-   - `telegram.api_id` / `telegram.api_hash` — your own, from [my.telegram.org](https://my.telegram.org/apps);
-   - `keystore.file` — path to a `keystore.properties` file **outside** the repository with `keystore.file`,
-     `keystore.password`, `key.alias`, `key.password`. Never commit signing material (`.gitignore` blocks the usual names).
-4. Push notifications need your own Firebase project: replace `app/google-services.json` (the committed one is for
-   `org.fgram.app`) and register the FCM service account at my.telegram.org for your `api_id`.
+### Option A — macOS
 
-```
-git submodule update --init --recursive --depth=1
-./gradlew assembleLatestArm64Release
-```
+1. Xcode Command Line Tools with the licence accepted: `xcode-select --install`, then
+   `sudo xcodebuild -license accept` (without it the libvpx `make` step fails).
+2. Homebrew packages: `brew install git-lfs wget gnu-sed && git lfs install`.
+3. JDK 21 (Temurin or any other build); point `JAVA_HOME` at it.
+4. Clone with submodules: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
+5. Android SDK + NDK: choose a directory, `export ANDROID_SDK_ROOT=<that directory>`, then run `scripts/setup-sdk.sh`
+   from the repository root — it downloads the command-line tools, platform, build-tools and the pinned NDK into it.
+6. Do the **common steps** below, then `./gradlew assembleLatestArm64Release`.
+
+### Option B — Ubuntu
+
+`scripts/setup-host.sh` does the whole thing on a fresh host: apt packages (OpenJDK 21, git-lfs, yasm, nasm, …),
+the Android SDK + NDK, a `local.properties` template, submodules, and the build.
+
+1. `git clone --depth=1 https://github.com/fortgram/fortgram.git && cd fortgram`
+2. `scripts/setup-host.sh deps` — system packages and the SDK (`ANDROID_SDK_ROOT` defaults to `~/android-sdk`).
+3. `scripts/setup-host.sh sync` — writes a `local.properties` template and fetches submodules.
+4. Do the **common steps** below.
+5. `scripts/setup-host.sh build` — Gradle build; the script prints the APK path and its certificate.
+
+### Common steps
+
+- `local.properties` (macOS: copy `local.properties.sample`; Ubuntu: the template from step 3). Fill in:
+  - `sdk.dir` — your Android SDK directory;
+  - `app.id` — **your own package name**; `org.fgram.app` belongs to the official builds;
+  - `telegram.api_id` / `telegram.api_hash` — your own, from [my.telegram.org](https://my.telegram.org/apps);
+  - `keystore.file` — path to a `keystore.properties` file **outside** the repository with `keystore.file`,
+    `keystore.password`, `key.alias`, `key.password` for your signing key (`keytool -genkeypair` creates one).
+    Never commit signing material — `.gitignore` blocks the usual names, keep it that way.
+- Push notifications need your own Firebase project: replace `app/google-services.json` (the committed one is for
+  `org.fgram.app`) and register the FCM service account at my.telegram.org for your `api_id`.
 
 The APK lands in `app/build/outputs/apk/latestArm64/release/`. The first build compiles the native dependencies
-(about 7 minutes on an M1 Pro); later builds take a minute or two. The upstream
+(about 7 minutes on an M1 Pro, over an hour on a 4-core cloud VM); later builds take a minute or two. The upstream
 [Telegram X README](https://github.com/TGX-Android/Telegram-X#readme) covers the build system, flavours and ABIs
 in more depth.
 
@@ -165,31 +182,47 @@ Android и сам откажется ставить поверх установ�
 
 ## Сборка
 
-Сборка — это сборка Telegram X (Gradle; нативные зависимости компилируются задачами Gradle). Официальные сборки
-FortGram делаются на macOS (Apple Silicon); на Linux всё работает так же. Что понадобится:
+Сборка — это сборка Telegram X: Gradle сам компилирует нативные зависимости, а версии SDK, NDK и build-tools
+зафиксированы в `version.properties`. Официальные сборки FortGram делаются на macOS (Apple Silicon); второй
+поддерживаемый путь — Ubuntu. В обоих случаях итог один: `./gradlew assembleLatestArm64Release`.
 
-1. **macOS:** Xcode Command Line Tools с принятой лицензией (`sudo xcodebuild -license accept` — иначе падает шаг
-   `make` у libvpx) и через Homebrew: `brew install git-lfs wget gnu-sed`.
-   **Linux (Ubuntu):** `scripts/setup-host.sh` ставит всё перечисленное ниже и собирает за один проход.
-2. JDK 21 и Android SDK с версией NDK, зафиксированной в `version.properties`, — их скачивает
-   `scripts/setup-sdk.sh` в `ANDROID_SDK_ROOT`.
-3. `local.properties` — скопируйте `local.properties.sample` и заполните:
-   - `app.id` — **своё имя пакета**; `org.fgram.app` принадлежит официальным сборкам;
-   - `telegram.api_id` / `telegram.api_hash` — свои, с [my.telegram.org](https://my.telegram.org/apps);
-   - `keystore.file` — путь к файлу `keystore.properties` **вне** репозитория с полями `keystore.file`,
-     `keystore.password`, `key.alias`, `key.password`. Никогда не коммитьте материалы подписи
-     (`.gitignore` закрывает типичные имена).
-4. Для push-уведомлений нужен свой проект Firebase: замените `app/google-services.json` (закоммиченный — для
-   `org.fgram.app`) и зарегистрируйте сервисный аккаунт FCM на my.telegram.org для своего `api_id`.
+### Вариант A — macOS
 
-```
-git submodule update --init --recursive --depth=1
-./gradlew assembleLatestArm64Release
-```
+1. Xcode Command Line Tools с принятой лицензией: `xcode-select --install`, затем
+   `sudo xcodebuild -license accept` (без этого падает шаг `make` у libvpx).
+2. Пакеты Homebrew: `brew install git-lfs wget gnu-sed && git lfs install`.
+3. JDK 21 (Temurin или любая другая сборка); укажите на него `JAVA_HOME`.
+4. Клонирование с сабмодулями: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
+5. Android SDK + NDK: выберите каталог, `export ANDROID_SDK_ROOT=<этот каталог>` и запустите `scripts/setup-sdk.sh`
+   из корня репозитория — он скачает туда command-line tools, платформу, build-tools и зафиксированный NDK.
+6. Выполните **общие шаги** ниже, затем `./gradlew assembleLatestArm64Release`.
+
+### Вариант B — Ubuntu
+
+`scripts/setup-host.sh` делает всё на чистом хосте: apt-пакеты (OpenJDK 21, git-lfs, yasm, nasm, …),
+Android SDK + NDK, шаблон `local.properties`, сабмодули и саму сборку.
+
+1. `git clone --depth=1 https://github.com/fortgram/fortgram.git && cd fortgram`
+2. `scripts/setup-host.sh deps` — системные пакеты и SDK (`ANDROID_SDK_ROOT` по умолчанию `~/android-sdk`).
+3. `scripts/setup-host.sh sync` — создаёт шаблон `local.properties` и забирает сабмодули.
+4. Выполните **общие шаги** ниже.
+5. `scripts/setup-host.sh build` — сборка Gradle; скрипт печатает путь к APK и его сертификат.
+
+### Общие шаги
+
+- `local.properties` (macOS: скопируйте `local.properties.sample`; Ubuntu: шаблон из шага 3). Заполните:
+  - `sdk.dir` — каталог вашего Android SDK;
+  - `app.id` — **своё имя пакета**; `org.fgram.app` принадлежит официальным сборкам;
+  - `telegram.api_id` / `telegram.api_hash` — свои, с [my.telegram.org](https://my.telegram.org/apps);
+  - `keystore.file` — путь к файлу `keystore.properties` **вне** репозитория с полями `keystore.file`,
+    `keystore.password`, `key.alias`, `key.password` для вашего ключа подписи (его создаёт `keytool -genkeypair`).
+    Никогда не коммитьте материалы подписи — `.gitignore` закрывает типичные имена, не ослабляйте его.
+- Для push-уведомлений нужен свой проект Firebase: замените `app/google-services.json` (закоммиченный — для
+  `org.fgram.app`) и зарегистрируйте сервисный аккаунт FCM на my.telegram.org для своего `api_id`.
 
 APK появится в `app/build/outputs/apk/latestArm64/release/`. Первая сборка компилирует нативные зависимости
-(около 7 минут на M1 Pro), последующие занимают минуту-две. Система сборки, флейворы и ABI подробнее описаны
-в [README Telegram X](https://github.com/TGX-Android/Telegram-X#readme).
+(около 7 минут на M1 Pro, больше часа на 4-ядерной облачной VM), последующие занимают минуту-две. Система сборки,
+флейворы и ABI подробнее описаны в [README Telegram X](https://github.com/TGX-Android/Telegram-X#readme).
 
 ## Лицензия
 
