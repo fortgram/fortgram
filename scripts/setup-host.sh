@@ -11,16 +11,11 @@
 #   ./scripts/setup-host.sh             # full install + build
 #   ./scripts/setup-host.sh deps        # system packages + Android SDK only
 #   ./scripts/setup-host.sh sync        # local.properties template + LFS + submodules
-#   ./scripts/setup-host.sh build       # gradle build (+ sign for the legacy line)
+#   ./scripts/setup-host.sh build       # gradle build + print the APK signature
 #
-# Two package lines exist while children's phones migrate:
-#   legacy  — app.id=org.example.fortgram, app.disable_signing=true, APK signed
-#             afterwards with the fixed debug keystore (KEYSTORE_PATH).
-#   release — app.id=org.fgram.app, signed by Gradle: local.properties
-#             `keystore.file` points to a keystore.properties file (kept outside
-#             the repo) with keystore.file / keystore.password / key.alias /
-#             key.password.
-# Select with LINE=legacy|release (default: release).
+# Package org.fgram.app is signed by Gradle: local.properties `keystore.file`
+# points to a keystore.properties file (kept outside the repo) with
+# keystore.file / keystore.password / key.alias / key.password.
 #
 # Designed to be idempotent — safe to re-run.
 
@@ -29,14 +24,8 @@ set -euo pipefail
 # ---------- Configuration ----------
 ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/android-sdk}"
 JAVA_HOME_DEFAULT="/usr/lib/jvm/java-21-openjdk-amd64"
-LINE="${LINE:-release}"
 GRADLE_TASK="${GRADLE_TASK:-assembleLatestArm64Release}"
-KEYSTORE_PROPERTIES="${KEYSTORE_PROPERTIES:-$HOME/keystore.properties}"   # release line
-
-# legacy line only
-KEYSTORE_PATH="${KEYSTORE_PATH:-$HOME/.android/debug.keystore}"
-KEYSTORE_PASS="${KEYSTORE_PASS:-android}"
-KEY_ALIAS="${KEY_ALIAS:-androiddebugkey}"
+KEYSTORE_PROPERTIES="${KEYSTORE_PROPERTIES:-$HOME/keystore.properties}"
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APK_DIR="$REPO_DIR/app/build/outputs/apk/latestArm64/release"
@@ -74,24 +63,8 @@ write_local_properties () {
     log "local.properties exists — leaving as-is"
     return
   fi
-  log "Creating local.properties for the '$LINE' line (fill in telegram.api_id / telegram.api_hash)"
-  if [ "$LINE" = "legacy" ]; then
-    cat > "$f" <<EOF
-sdk.dir=$ANDROID_SDK_ROOT
-
-app.id=org.example.fortgram
-app.name=FortGram
-app.download_url=https://fgram.org
-app.disable_signing=true
-
-# Obtain from https://core.telegram.org/api/obtaining_api_id
-telegram.api_id=
-telegram.api_hash=
-
-tgx.extension=none
-EOF
-  else
-    cat > "$f" <<EOF
+  log "Creating local.properties (fill in telegram.api_id / telegram.api_hash)"
+  cat > "$f" <<EOF
 sdk.dir=$ANDROID_SDK_ROOT
 
 app.id=org.fgram.app
@@ -108,7 +81,6 @@ telegram.api_hash=
 
 tgx.extension=none
 EOF
-  fi
   chmod 600 "$f"
   warn "Fill in telegram.api_id and telegram.api_hash in $f before building"
 }
@@ -133,26 +105,16 @@ gradle_build () {
   ./gradlew --no-daemon "$GRADLE_TASK"
 }
 
-# ---------- Step 6: sign APK (legacy line only) ----------
-sign_apk () {
-  local apk_in
-  apk_in="$(ls -t "$APK_DIR"/FortGram-*.apk 2>/dev/null | grep -v -- '-signed.apk' | head -1 || true)"
-  [ -n "$apk_in" ] || err "Built APK not found in $APK_DIR"
-  if [ "$LINE" != "legacy" ]; then
-    log "Release line: APK is signed by Gradle -> $apk_in"
-    return
-  fi
-  [ -f "$KEYSTORE_PATH" ] || err "Legacy keystore not found: $KEYSTORE_PATH (the fixed debug key devices trust)"
-  local apk_out="${apk_in%.apk}-signed.apk"
-  local apksigner
+# ---------- Step 6: report the signed APK ----------
+report_apk () {
+  local apk apksigner
+  apk="$(ls -t "$APK_DIR"/FortGram-*.apk 2>/dev/null | head -1 || true)"
+  [ -n "$apk" ] || err "Built APK not found in $APK_DIR"
   apksigner="$(ls -d "$ANDROID_SDK_ROOT"/build-tools/*/apksigner | sort -V | tail -1)"
-  log "Signing APK (legacy line, v4 signature off) -> $apk_out"
-  # --v4-signing-enabled false: incremental installs broke on some OEMs (package removed instead of updated).
-  "$apksigner" sign --v4-signing-enabled false \
-    --ks "$KEYSTORE_PATH" --ks-pass "pass:$KEYSTORE_PASS" --key-pass "pass:$KEYSTORE_PASS" \
-    --ks-key-alias "$KEY_ALIAS" --out "$apk_out" "$apk_in"
-  "$apksigner" verify --print-certs "$apk_out" | grep -i "SHA-1" || true
-  log "Install with: adb install -r --no-incremental $apk_out"
+  log "APK (signed by Gradle): $apk"
+  "$apksigner" verify --print-certs "$apk" | grep -i "SHA-256 digest" || true
+  # --no-incremental: incremental installs broke on some OEMs (package removed instead of updated).
+  log "Install with: adb install -r --no-incremental $apk"
 }
 
 # ---------- Entry point ----------
@@ -169,7 +131,7 @@ case "$mode" in
     ;;
   build)
     gradle_build
-    sign_apk
+    report_apk
     ;;
   all|"")
     install_system_deps
@@ -177,7 +139,7 @@ case "$mode" in
     write_local_properties
     sync_repo
     gradle_build
-    sign_apk
+    report_apk
     ;;
   *)
     err "Unknown mode: $mode (use: deps | sync | build | all)"

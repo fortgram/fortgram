@@ -16,8 +16,18 @@ obj
 
 /captures
 /local.properties
+# Per-line copies of the build configuration (contain telegram.api_hash)
+/local.properties.*
+!/local.properties.sample
+
+# Signing material must never enter the repository: the release key and its
+# password file live outside the working tree (see CLAUDE.md).
+*.jks
+*.keystore
+keystore.properties
 
 # Local docs / agent context that may contain machine-specific paths or api_id
 /CLAUDE.md
+/.claude/
 
 libc++_shared.so
