@@ -216,6 +216,8 @@ object Sdk {
   const val NOUGAT_OREO_PIE = 3
   const val Q_R_S = 4
   const val LATEST = 5
+  /** FortGram: a single APK for every supported device (Android 7.0+) — no maxSdk, unlike upstream's per-release flavors. */
+  const val FORTGRAM = 6
 
   val VARIANTS = mapOf(
     Pair(LEGACY, SdkVariant(
@@ -249,6 +251,10 @@ object Sdk {
       flavor = "latest",
       minSdk = 33,
       displayName = null
+    )),
+    Pair(FORTGRAM, SdkVariant(
+      flavor = "fortgram",
+      minSdk = 24
     ))
   )
 }
