@@ -1,127 +1,112 @@
-# [Telegram X](https://play.google.com/store/apps/details?id=org.thunderdog.challegram) — a slick experimental Telegram client based on [TDLib](https://core.telegram.org/tdlib).
+# FortGram
 
-![Telegram X](/images/feature.png)
+**A Telegram client for children, with parental controls built into the app.**
+*Telegram-клиент для детей со встроенным родительским контролем — [по-русски ниже](#по-русски).*
 
-This is the complete source code and the build instructions for the official alternative Android client for the Telegram messenger, based on the [Telegram API](https://core.telegram.org/api) and the [MTProto](https://core.telegram.org/mtproto) secure protocol via [TDLib](https://github.com/TGX-Android/tdlib).
+FortGram is a fork of [Telegram X](https://github.com/TGX-Android/Telegram-X) for Android. It replaces the
+standard Telegram app on a child's phone: the parent decides who the child can talk to, and the app hides
+everyone else — in the chat list, in search and in notifications. Settings are protected by a parental PIN.
 
-* [**Telegram X** on Google Play](http://play.google.com/store/apps/details?id=org.thunderdog.challegram) ([subscribe to beta](https://play.google.com/apps/testing/org.thunderdog.challegram))
-* [APKs and Build Info](https://t.me/tgx_log)
-* [Bot to verify APK hash](https://t.me/tgx_bot)
+- Website and documentation: **[fgram.org](https://fgram.org)** — [Quick Start](https://github.com/fortgram/fortgram-site/blob/main/docs/quickstart.md), [How it works](https://github.com/fortgram/fortgram-site/blob/main/docs/fortgram.md), [FAQ](https://github.com/fortgram/fortgram-site/blob/main/docs/faq.md)
+- Download: [GitHub Releases](https://github.com/fortgram/fortgram/releases) (Android 7.0+, arm64)
+- [Privacy Policy](https://github.com/fortgram/fortgram-site/blob/main/docs/privacy.md) · [Disclaimer](https://github.com/fortgram/fortgram-site/blob/main/docs/DISCLAIMER.md)
 
-<details>
-<summary>Other sources</summary>
+## What it does
 
-* [**Telegram X** on Huawei AppGallery](https://appgallery.huawei.com/app/C101754199)
-* [**GitHub Releases**](https://github.com/TGX-Android/Telegram-X/releases)
+- **Whitelist mode** — the child sees only phone-book contacts, users and groups the parent allowed, and Telegram's
+  service chat. Everything else is hidden from the chat list, search results and notifications.
+- **Allowed groups** — the parent switches individual groups on; in an allowed group the child can read and write.
+- **Sticker packs** — optionally only parent-approved packs, with search by name.
+- **Parental PIN** — settings are locked behind a PIN; the child can use the app but cannot change the rules.
+- **Backup and transfer** — export the rules to a file, the clipboard or a QR code and import them on another phone,
+  with a preview where individual entries can be unticked. The export never contains the PIN or any messages.
+- **Background work and calls** — a settings screen with shortcuts to the vendor-specific switches (battery,
+  autostart, pop-ups in background) that decide whether calls ring when the app is closed.
 
-</details>
+What it does *not* do: read, filter or block message content, monitor the child, or stop the child from using the
+account on another device. The documentation describes the device- and account-level measures that go with it.
 
-## Build instructions
+## Privacy
 
-### Prerequisites
+There are no FortGram servers. The app talks to Telegram through [TDLib](https://github.com/tdlib/td) exactly like
+Telegram X does, and uses Firebase Cloud Messaging only to receive push notifications. No analytics, no crash
+reporting, no telemetry. Details: [Privacy Policy](https://github.com/fortgram/fortgram-site/blob/main/docs/privacy.md).
 
-* At least **5,34GB** of free disk space: **487,10MB** for source codes and around **4,85GB** for files generated after building all variants
-* **4GB** of RAM
-* **macOS** or **Linux**-based operating system.
+## Verifying a release
 
-#### macOS
+Official builds are signed with one key. Before installing an APK downloaded from anywhere other than this
+repository's Releases page:
 
-* [Homebrew](https://brew.sh)
-* git with LFS, wget and sed: `$ brew install git git-lfs wget gsed && git lfs install`
+```
+apksigner verify --print-certs FortGram-*.apk
+```
 
-#### Ubuntu
+must show certificate SHA-256
+`54:DA:5E:95:C6:83:2D:DE:0A:89:35:48:2D:5D:EE:C7:A3:FA:C0:A1:9B:10:AF:58:E1:E1:70:F7:1C:17:5F:2B`.
+Android itself refuses to install an update signed with a different key over an existing FortGram.
 
-* git with LFS: `# apt install git git-lfs`
-* Run `$ git lfs install` for the current user, if you didn't have `git-lfs` previously installed
+## What is changed compared to Telegram X
 
-#### Windows
+Upstream is kept as close to 1:1 as possible so that new Telegram X versions can be merged. The fork adds
 
-* **Telegram X** does not provide official build instructions for Windows platform. It is recommended to rely on Linux distributions instead.
+- `app/src/main/java/org/thunderdog/challegram/fortgram/` — the parental-control layer: `ParentalPolicy` (the
+  single source of truth for the rules), the settings screens, export / import (`ParentalConfig`);
+- small patches at a few chokepoints (`Tdlib`, `TdlibUi`, `ChatsController`, `SearchManager`,
+  `TdlibNotificationHelper`, `AppUpdater`) that consult `ParentalPolicy`;
+- strings in `app/src/main/res/values*/local_strings.xml` (English, Russian, Ukrainian);
+- the Telegram X in-app updater is disabled — updates come from Releases.
 
-### Building
+`git log --author=TheRu27` lists every change; everything else is upstream Telegram X.
 
-1. `$ git clone --recursive --depth=1 --shallow-submodules https://github.com/TGX-Android/Telegram-X tgx` — clone **Telegram X** with submodules
-2. In case you forgot the `--recursive` flag, `cd` into `tgx` directory and: `$ git submodule init && git submodule update --init --recursive --depth=1`
-3. Create `keystore.properties` file outside of source tree with the following properties:<br/>`keystore.file`: absolute path to the keystore file<br/>`keystore.password`: password for the keystore<br/>`key.alias`: key alias that will be used to sign the app<br/>`key.password`: key password.<br/>**Warning**: keep this file safe and make sure nobody, except you, has access to it. For production builds one could use a separate user with home folder encryption to avoid harm from physical theft
-4. `$ cd tgx`
-5. Run `$ scripts/./setup.sh` and follow up the instructions
-6. If you specified package name that's different from the one Telegram X uses, [setup Firebase](https://firebase.google.com/docs/android/setup) and replace `google-services.json` with the one that's suitable for the `app.id` you need
-7. Now you can open the project using **[Android Studio](https://developer.android.com/studio/)** or build manually from the command line: `./gradlew assembleUniversalRelease`.
+## Building
 
-### Quick setup for development
+The build is the upstream Telegram X build (Gradle; native dependencies are compiled by Gradle tasks). What you need:
 
-If you are developing a [contribution](https://github.com/TGX-Android/Telegram-X/blob/main/docs/PULL_REQUEST_TEMPLATE.md) to the project, you may follow the simpler building steps:
+1. JDK 21, Git with Git LFS, and the Android SDK with the NDK version pinned in `version.properties`
+   (`scripts/setup-sdk.sh` installs them).
+2. `local.properties` — copy `local.properties.sample` and fill in:
+   - `app.id` — **your own package name**; `org.fgram.app` belongs to the official builds;
+   - `telegram.api_id` / `telegram.api_hash` — your own, from [my.telegram.org](https://my.telegram.org/apps);
+   - `keystore.file` — path to a `keystore.properties` file **outside** the repository with `keystore.file`,
+     `keystore.password`, `key.alias`, `key.password`. Never commit signing material (`.gitignore` blocks the usual names).
+3. Push notifications need your own Firebase project: replace `app/google-services.json` (the committed one is for
+   `org.fgram.app`) and register the FCM service account at my.telegram.org for your `api_id`.
 
-1. `$ git clone --recursive https://github.com/TGX-Android/Telegram-X tgx`
-2. `$ cd tgx`
-3. [Obtain Telegram API credentials](https://core.telegram.org/api/obtaining_api_id)
-4. Create `local.properties` file in the root project folder using any text editor:<br/><pre># Location where you have Android SDK installed
-sdk.dir=YOUR_ANDROID_SDK_FOLDER
-\# Telegram API credentials obtained at previous step
-telegram.api_id=YOUR_TELEGRAM_API_ID
-telegram.api_hash=YOUR_TELEGRAM_API_HASH</pre>
-5. Run `$ scripts/./setup.sh` — this will download required Android SDK packages and build native dependencies that aren't part of project's [CMakeLists.txt](/app/jni/CMakeLists.txt)
-6. Open and build project via [Android Studio](https://developer.android.com/studio) or by using one of `./gradlew assemble` commands in terminal
+```
+git submodule update --init --recursive --depth=1
+./gradlew assembleLatestArm64Release
+```
 
-After submitting a pull request and its initial review, special build including your contribution will be published in [@tgx_prs](https://t.me/tgx_prs) channel, where it can be tested by the community. In case any issues or bugs found, you may push more commits to an existing PR that address them and request to publish a newer build by using comments section of pull request or in [@tgx_dev](https://t.me/tgx_dev) chat.
-
-## Reproducing public builds
-
-In order to verify that there is no additional source code injected inside official APKs, you must use one of the following versions of **Ubuntu**:
-
-* **21.04**: for builds published before [26th May 2023](https://github.com/TGX-Android/Telegram-X/commit/e9a054a0f469a98a13f7e0d751539687fef8759b)
-* **22.04.2 LTS**: for builds published before 27th September 2025
-* **24.04 LTS**: for any newer releases.
-
-And update its configuration:
-
-1. Create user called `vk` with the home directory located at `/home/vk`
-2. Clone `tgx` repository to `/home/vk/tgx`
-3. Check out the specific commit you want to verify
-4. In rare cases of builds that include unmerged pull requests, you must follow actions performed by [Publisher's](https://github.com/TGX-Android/Publisher/blob/main/main.js) `fetchPr` and `squashPr` tasks
-5. `cd` into `tgx` folder and install dependencies: `# apt install $(cat reproducible-builds/dependencies.txt)`
-6. Follow up the build instruction from the previous section
-7. Run `$ apkanalyzer apk compare --different-only <remote-apk> <reproduced-apk>`
-8. If only signature files and metadata differ, build reproduction is successful.
-
-In future build reproduction might become easier. Here's a list of related PR-welcome TODOs:
-
-* Project path must not affect the resulting `.so` files, so user & project location requirement could be removed
-* When building native binaries on **macOS**, `.comment` ELF section differs from the one built with **Linux** version of NDK. It must be removed or made deterministic without any side-effects like breaking `native-debug-symbols.zip` (or should be reported to NDK team?)
-* Checksums of cold APK builds always differ, even though the same keystore applied and generated inner APK contents do not differ. Real cause must be investigated and fixed, if possible.<br/>To generate cold build, invoke `$ scripts/./reset.sh` and `$ scripts/./setup.sh --skip-sdk-setup`.<br/>**Warning**: this will also reset changes inside some of the submodules ([ffmpeg](/app/jni/thirdparty/ffmpeg), [libvpx](/app/jni/thirdparty/libvpx), [webp](/app/jni/thirdparty/webp), [opus](/app/jni/thirdparty/opus) and [ExoPlayer](/app/jni/thirdparty/exoplayer))
-* Move local pull requests squash-merging from [Publisher](https://github.com/TGX-Android/Publisher) to some script inside this repository to make reproduction of builds that include them easier.
-
-<i>PS: [Docker](https://www.docker.com) is not considered an option, as it just hides away these tasks, and requires that all published APKs must be built using it.</i>
-
-## Verifying side-loaded APKs
-
-If you downloaded **Telegram X** APK from somewhere and would like to simply verify whether it's an original APK without any injected malicious source code, you need to get checksum (`SHA-256`, `SHA-1` or `MD5`) of the downloaded APK file and find whether it corresponds to any known **Telegram X** version.
-
-In order to obtain **SHA-256** of the APK:
-
-* `$ sha256sum <path-to-apk>` on **Ubuntu**
-* `$ shasum -a 256 <path-to-apk>` on **macOS**
-* `$ certutil -hashfile <path-to-apk> SHA256` on **Windows**
-
-Once obtained, there are three ways to find out the commit for the specific checksum:
-
-* Sending checksum to [`@tgx_bot`](https://t.me/tgx_bot)
-* Searching for a checksum in [`@tgx_log`](https://t.me/tgx_log). You can do so without need in installing any Telegram client by using this URL format: [`https://t.me/s/tgx_log?q={checksum}`](https://t.me/s/tgx_log?q=c541ebb0a3ae7bb6e6bd155530f375d567b8aef1761fdd942fb5d69af62e24ae) (click to see in action). Note: unpublished builds cannot be verified this way.
+The APK lands in `app/build/outputs/apk/latestArm64/release/`. `scripts/setup-host.sh` bootstraps a fresh Ubuntu
+host end to end. The upstream [Telegram X README](https://github.com/TGX-Android/Telegram-X#readme) covers the
+build system, flavours and ABIs in more depth.
 
 ## License
 
-`Telegram X` is licensed under the terms of the GNU General Public License v3.0.
+FortGram is free software under the [GNU General Public License v3.0](LICENSE), as a derivative of Telegram X
+(© Telegram X authors). FortGram's changes are © the FortGram contributors. It is provided "as is", without
+warranty of any kind — see the [Disclaimer](https://github.com/fortgram/fortgram-site/blob/main/docs/DISCLAIMER.md).
 
-For more information, see [LICENSE](/LICENSE) file.
+FortGram is an independent project and is not affiliated with Telegram or Google.
 
-License of components and third-party dependencies it relies on might differ, check `LICENSE` file in the corresponding folder.
+---
 
-### Third-party dependencies
+## По-русски
 
-List of third-party components used in **Telegram X** can be found [here](/docs/THIRDPARTY.md). Additionally you can check the specific commit of the third-party component used, for example, [here](/app/jni/thirdparty) and [here](/thirdparty).
+**FortGram** — Android-клиент Telegram для детей, форк [Telegram X](https://github.com/TGX-Android/Telegram-X).
+Он ставится на телефон ребёнка вместо обычного Telegram: родитель решает, с кем ребёнок может общаться
+(контакты, разрешённые пользователи и группы, при желании — стикерпаки), а всё остальное приложение скрывает —
+в списке чатов, в поиске и в уведомлениях. Настройки защищены родительским PIN; правила можно сохранить в файл
+или QR-код и перенести на другой телефон.
 
-## Contributions
+Сайт и документация: **[fgram.org](https://fgram.org)** —
+[Быстрый старт](https://github.com/fortgram/fortgram-site/blob/main/docs/quickstart.md#быстрый-старт),
+[Как это работает](https://github.com/fortgram/fortgram-site/blob/main/docs/fortgram.md#fortgram--как-это-работает),
+[Вопросы и решение проблем](https://github.com/fortgram/fortgram-site/blob/main/docs/faq.md#вопросы-и-решение-проблем),
+[Политика конфиденциальности](https://github.com/fortgram/fortgram-site/blob/main/docs/privacy.md#политика-конфиденциальности).
+Скачать: [Releases](https://github.com/fortgram/fortgram/releases) (Android 7.0+, arm64).
 
-**Telegram X** welcomes contributions. Check out [pull request template](/docs/PULL_REQUEST_TEMPLATE.md) and [guide for contributors](/docs/GUIDE.md) to learn more about Telegram X internals before creating the first pull request.
+Серверов FortGram не существует: приложение общается с Telegram через TDLib, как и Telegram X, а Firebase
+используется только для доставки push-уведомлений. Никакой аналитики и телеметрии.
 
-If you are a regular user and experience a problem with Telegram X, the best place to look for solution is [Telegram X chat](https://t.me/tgandroidtests) — a community with over 4 thousand members. Please do not use this repository to ask questions: if you have general issue with Telegram, refer to [FAQ](http://telegram.org/faq) or contact [Telegram Support](https://telegram.org/faq#telegram-support).
+Лицензия — GPL-3.0. FortGram — независимый проект, не связанный с Telegram или Google.
