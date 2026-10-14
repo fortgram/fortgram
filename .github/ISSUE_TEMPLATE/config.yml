@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability / Уязвимость
+    url: https://github.com/fortgram/fortgram/security/advisories/new
+    about: A way to bypass the parental controls? Report it privately here, not as an issue. / Обход родительского контроля — сообщайте приватно здесь, не в issue.
+  - name: Documentation and FAQ / Документация и FAQ
+    url: https://fgram.org
+    about: Setup guides, FAQ and troubleshooting (calls in background, forgotten PIN, hidden groups). / Инструкции, FAQ и решение проблем.
