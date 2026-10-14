@@ -48,8 +48,11 @@ public final class ParentalPinGate {
     configureAsPinInput(input);
   }
 
-  /** Verify existing PIN, then run onSuccess. */
+  /** Verify existing PIN, then run onSuccess. Refuses to even show the dialog while the PIN is locked. */
   public static void promptUnlock (ViewController<?> controller, OnSuccess onSuccess) {
+    if (showLockedToast()) {
+      return;
+    }
     MaterialEditTextGroup input = controller.openInputAlert(
       Lang.getString(R.string.ParentalControls),
       Lang.getString(R.string.ParentalPinUnlockHint),
@@ -59,9 +62,24 @@ public final class ParentalPinGate {
           onSuccess.run();
           return true;
         }
+        if (showLockedToast()) {
+          return true; // close the dialog: nothing can be entered until the lock expires
+        }
+        UI.showToast(R.string.ParentalPinWrong, Toast.LENGTH_SHORT);
         return false;
       }, true);
     configureAsPinInput(input);
+  }
+
+  /** Shows "try again in …" if the PIN is currently locked. Returns whether it was. */
+  private static boolean showLockedToast () {
+    long remainingMs = ParentalPin.instance().lockRemainingMs();
+    if (remainingMs <= 0) {
+      return false;
+    }
+    int seconds = (int) Math.max(1, (remainingMs + 999) / 1000);
+    UI.showToast(Lang.getString(R.string.ParentalPinLocked, Lang.getDuration(seconds)), Toast.LENGTH_LONG);
+    return true;
   }
 
   /** Change PIN from inside parental settings (no need to verify old — already inside). */
@@ -102,7 +120,8 @@ public final class ParentalPinGate {
   private static void configureAsPinInput (MaterialEditTextGroup input) {
     if (input == null) return;
     input.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+    // Length is enforced by the filter only: setMaxLength() would also draw a "digits left" counter,
+    // which tells an onlooker how long the PIN is.
     input.getEditText().setFilters(new InputFilter[] {new InputFilter.LengthFilter(ParentalPin.PIN_SIZE)});
-    input.setMaxLength(ParentalPin.PIN_SIZE);
   }
 }

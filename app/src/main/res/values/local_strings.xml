@@ -20,6 +20,7 @@
   <string name="ParentalPinUnlockHint">Enter parental PIN</string>
   <string name="ParentalPinMismatch">PINs don\'t match. Try again.</string>
   <string name="ParentalPinWrong">Wrong PIN</string>
+  <string name="ParentalPinLocked">Too many wrong attempts. Try again in %1$s.</string>
   <string name="ParentalPinChange">Change PIN</string>
   <string name="ParentalPinDisable">Disable Parental Controls</string>
   <string name="ParentalPinDisableConfirm">Disable parental controls and remove PIN?</string>
