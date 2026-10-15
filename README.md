@@ -71,7 +71,7 @@ Silicon); Ubuntu is the second supported path. Either way the result is `./gradl
 1. Xcode Command Line Tools with the licence accepted: `xcode-select --install`, then
    `sudo xcodebuild -license accept` (without it the libvpx `make` step fails).
 2. Homebrew packages: `brew install git-lfs wget gnu-sed && git lfs install`.
-3. JDK 21 (Temurin or any other build); point `JAVA_HOME` at it.
+3. JDK 25 (Temurin or any other build); point `JAVA_HOME` at it.
 4. Clone with submodules: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
 5. Android SDK + NDK: choose a directory, `export ANDROID_SDK_ROOT=<that directory>`, then run `scripts/setup-sdk.sh`
    from the repository root — it downloads the command-line tools, platform, build-tools and the pinned NDK into it.
@@ -79,7 +79,7 @@ Silicon); Ubuntu is the second supported path. Either way the result is `./gradl
 
 ### Option B — Ubuntu
 
-`scripts/setup-host.sh` does the whole thing on a fresh host: apt packages (OpenJDK 21, git-lfs, yasm, nasm, …),
+`scripts/setup-host.sh` does the whole thing on a fresh host: apt packages (git-lfs, yasm, nasm, …), Temurin JDK 25 from the Adoptium repository,
 the Android SDK + NDK, a `local.properties` template, submodules, and the build.
 
 1. `git clone --depth=1 https://github.com/fortgram/fortgram.git && cd fortgram`
@@ -191,7 +191,7 @@ Android и сам откажется ставить поверх установ�
 1. Xcode Command Line Tools с принятой лицензией: `xcode-select --install`, затем
    `sudo xcodebuild -license accept` (без этого падает шаг `make` у libvpx).
 2. Пакеты Homebrew: `brew install git-lfs wget gnu-sed && git lfs install`.
-3. JDK 21 (Temurin или любая другая сборка); укажите на него `JAVA_HOME`.
+3. JDK 25 (Temurin или любая другая сборка); укажите на него `JAVA_HOME`.
 4. Клонирование с сабмодулями: `git clone --recursive --depth=1 --shallow-submodules https://github.com/fortgram/fortgram.git`
 5. Android SDK + NDK: выберите каталог, `export ANDROID_SDK_ROOT=<этот каталог>` и запустите `scripts/setup-sdk.sh`
    из корня репозитория — он скачает туда command-line tools, платформу, build-tools и зафиксированный NDK.
@@ -199,7 +199,7 @@ Android и сам откажется ставить поверх установ�
 
 ### Вариант B — Ubuntu
 
-`scripts/setup-host.sh` делает всё на чистом хосте: apt-пакеты (OpenJDK 21, git-lfs, yasm, nasm, …),
+`scripts/setup-host.sh` делает всё на чистом хосте: apt-пакеты (git-lfs, yasm, nasm, …), Temurin JDK 25 из репозитория Adoptium,
 Android SDK + NDK, шаблон `local.properties`, сабмодули и саму сборку.
 
 1. `git clone --depth=1 https://github.com/fortgram/fortgram.git && cd fortgram`

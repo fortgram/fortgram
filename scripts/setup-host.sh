@@ -23,7 +23,7 @@ set -euo pipefail
 
 # ---------- Configuration ----------
 ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/android-sdk}"
-JAVA_HOME_DEFAULT="/usr/lib/jvm/java-21-openjdk-amd64"
+JAVA_HOME_DEFAULT="/usr/lib/jvm/temurin-25-jdk-$(dpkg --print-architecture 2>/dev/null || echo amd64)"
 GRADLE_TASK="${GRADLE_TASK:-assembleFortgramArm64Release}"
 KEYSTORE_PROPERTIES="${KEYSTORE_PROPERTIES:-$HOME/keystore.properties}"
 
@@ -40,10 +40,19 @@ install_system_deps () {
   log "Installing system dependencies via apt"
   sudo apt-get update -q
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    openjdk-21-jdk-headless \
     git git-lfs \
     yasm nasm make pkg-config \
-    curl wget unzip
+    curl wget unzip gpg
+  # Java 25 (required since upstream 1818) is not in the Ubuntu LTS archives — use Eclipse Adoptium's repository.
+  if [ ! -d "$JAVA_HOME_DEFAULT" ]; then
+    log "Installing Temurin JDK 25 from packages.adoptium.net"
+    sudo install -d -m 0755 /etc/apt/keyrings
+    wget -qO- https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo gpg --dearmor --yes -o /etc/apt/keyrings/adoptium.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo "$VERSION_CODENAME") main" \
+      | sudo tee /etc/apt/sources.list.d/adoptium.list >/dev/null
+    sudo apt-get update -q
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y temurin-25-jdk
+  fi
   git lfs install --skip-repo
 }
 
